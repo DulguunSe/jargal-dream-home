@@ -2,14 +2,14 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import Layout from "@/components/Layout";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
-import { useProperties } from "@/hooks/useProperties";
+import { useProperties, type Property } from "@/hooks/useProperties";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
-import { LogOut, Trash2, Loader2 } from "lucide-react";
+import { LogOut, Trash2, Loader2, Plus, Pencil } from "lucide-react";
+import PropertyForm from "@/components/PropertyForm";
 
 const Admin = () => {
   const { user, isAdmin, loading: authLoading, signIn, signOut } = useAuth();
@@ -17,6 +17,8 @@ const Admin = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loginLoading, setLoginLoading] = useState(false);
+  const [showForm, setShowForm] = useState(false);
+  const [editingProperty, setEditingProperty] = useState<Property | null>(null);
   const { toast } = useToast();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -46,6 +48,16 @@ const Admin = () => {
       queryClient.invalidateQueries({ queryKey: ["properties"] });
       toast({ title: "Property removed" });
     }
+  };
+
+  const handleEdit = (property: Property) => {
+    setEditingProperty(property);
+    setShowForm(true);
+  };
+
+  const handleCloseForm = () => {
+    setShowForm(false);
+    setEditingProperty(null);
   };
 
   if (authLoading) {
@@ -102,10 +114,23 @@ const Admin = () => {
               <h1 className="font-display text-3xl font-bold text-foreground">Admin Dashboard</h1>
               <p className="text-muted-foreground mt-1">Manage your property listings</p>
             </div>
-            <Button variant="outline" onClick={handleLogout}>
-              <LogOut size={16} className="mr-2" /> Logout
-            </Button>
+            <div className="flex gap-3">
+              {!showForm && (
+                <Button className="bg-accent text-accent-foreground hover:bg-accent/90" onClick={() => { setEditingProperty(null); setShowForm(true); }}>
+                  <Plus size={16} className="mr-2" /> Add Property
+                </Button>
+              )}
+              <Button variant="outline" onClick={handleLogout}>
+                <LogOut size={16} className="mr-2" /> Logout
+              </Button>
+            </div>
           </div>
+
+          {showForm && (
+            <div className="mb-8">
+              <PropertyForm property={editingProperty} onClose={handleCloseForm} />
+            </div>
+          )}
 
           {propsLoading ? (
             <div className="flex justify-center py-16"><Loader2 className="animate-spin text-accent" size={32} /></div>
@@ -125,14 +150,24 @@ const Admin = () => {
                   <tbody>
                     {properties.map((p) => (
                       <tr key={p.id} className="border-b border-border last:border-0">
-                        <td className="p-4 text-foreground font-medium">{p.title}</td>
+                        <td className="p-4 text-foreground font-medium">
+                          <div className="flex items-center gap-3">
+                            <img src={p.image} alt={p.title} className="w-10 h-10 rounded object-cover hidden sm:block" />
+                            <span>{p.title}</span>
+                          </div>
+                        </td>
                         <td className="p-4 text-muted-foreground hidden sm:table-cell">{p.location}</td>
                         <td className="p-4 text-muted-foreground hidden md:table-cell">{p.type}</td>
                         <td className="p-4 text-accent font-semibold">${p.price.toLocaleString()}</td>
                         <td className="p-4 text-right">
-                          <Button variant="ghost" size="sm" onClick={() => handleDelete(p.id)} className="text-destructive hover:text-destructive">
-                            <Trash2 size={16} />
-                          </Button>
+                          <div className="flex items-center justify-end gap-1">
+                            <Button variant="ghost" size="sm" onClick={() => handleEdit(p)} className="text-foreground hover:text-accent">
+                              <Pencil size={16} />
+                            </Button>
+                            <Button variant="ghost" size="sm" onClick={() => handleDelete(p.id)} className="text-destructive hover:text-destructive">
+                              <Trash2 size={16} />
+                            </Button>
+                          </div>
                         </td>
                       </tr>
                     ))}
