@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { MapPin, BedDouble, Bath, Maximize } from "lucide-react";
-import { Property } from "@/data/properties";
+import type { Property } from "@/hooks/useProperties";
 
 const PropertyCard = ({ property }: { property: Property }) => (
   <Link

@@ -2,13 +2,15 @@ import { useState, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
 import Layout from "@/components/Layout";
 import PropertyCard from "@/components/PropertyCard";
-import { properties } from "@/data/properties";
+import { useProperties } from "@/hooks/useProperties";
+import { Loader2 } from "lucide-react";
 
 const Properties = () => {
   const [searchParams] = useSearchParams();
   const [location, setLocation] = useState(searchParams.get("location") || "");
   const [type, setType] = useState(searchParams.get("type") || "");
   const [maxPrice, setMaxPrice] = useState(searchParams.get("maxPrice") || "");
+  const { data: properties = [], isLoading } = useProperties();
 
   const filtered = useMemo(() => {
     return properties.filter((p) => {
@@ -17,7 +19,7 @@ const Properties = () => {
       if (maxPrice && p.price > Number(maxPrice)) return false;
       return true;
     });
-  }, [location, type, maxPrice]);
+  }, [properties, location, type, maxPrice]);
 
   const selectClass = "rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground";
 
@@ -30,7 +32,6 @@ const Properties = () => {
             <h1 className="font-display text-3xl sm:text-4xl font-bold text-foreground mt-1">Our Properties</h1>
           </div>
 
-          {/* Filters */}
           <div className="flex flex-col sm:flex-row gap-3 mb-8 p-4 bg-secondary rounded-lg">
             <select value={location} onChange={(e) => setLocation(e.target.value)} className={selectClass + " flex-1"}>
               <option value="">All Locations</option>
@@ -53,7 +54,9 @@ const Properties = () => {
             </select>
           </div>
 
-          {filtered.length === 0 ? (
+          {isLoading ? (
+            <div className="flex justify-center py-16"><Loader2 className="animate-spin text-accent" size={32} /></div>
+          ) : filtered.length === 0 ? (
             <p className="text-center text-muted-foreground py-16">No properties match your filters.</p>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">

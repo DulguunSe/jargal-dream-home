@@ -3,13 +3,14 @@ import { Search, ArrowRight, Shield, Users, Award } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Layout from "@/components/Layout";
 import PropertyCard from "@/components/PropertyCard";
-import { properties } from "@/data/properties";
+import { useFeaturedProperties, useProperties } from "@/hooks/useProperties";
 import heroImage from "@/assets/hero-property.jpg";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const Index = () => {
-  const featured = properties.filter((p) => p.featured).slice(0, 4);
+  const { data: featured = [] } = useFeaturedProperties();
+  const { data: allProperties = [] } = useProperties();
   const navigate = useNavigate();
   const [search, setSearch] = useState({ location: "", type: "", maxPrice: "" });
 
@@ -42,7 +43,6 @@ const Index = () => {
             Discover exceptional homes and investment opportunities with Jargal Properties.
           </p>
 
-          {/* Search bar */}
           <form onSubmit={handleSearch} className="mt-8 bg-card/95 backdrop-blur rounded-lg p-4 flex flex-col sm:flex-row gap-3">
             <select
               value={search.location}
@@ -50,7 +50,7 @@ const Index = () => {
               className="flex-1 rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground"
             >
               <option value="">All Locations</option>
-              {[...new Set(properties.map((p) => p.location))].map((loc) => (
+              {[...new Set(allProperties.map((p) => p.location))].map((loc) => (
                 <option key={loc} value={loc}>{loc}</option>
               ))}
             </select>
@@ -60,7 +60,7 @@ const Index = () => {
               className="flex-1 rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground"
             >
               <option value="">All Types</option>
-              {[...new Set(properties.map((p) => p.type))].map((t) => (
+              {[...new Set(allProperties.map((p) => p.type))].map((t) => (
                 <option key={t} value={t}>{t}</option>
               ))}
             </select>
