@@ -1,12 +1,22 @@
 import { useParams, Link } from "react-router-dom";
-import { ArrowLeft, MapPin, BedDouble, Bath, Maximize, Check } from "lucide-react";
+import { ArrowLeft, MapPin, BedDouble, Bath, Maximize, Check, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Layout from "@/components/Layout";
-import { properties } from "@/data/properties";
+import { useProperty } from "@/hooks/useProperties";
 
 const PropertyDetail = () => {
   const { id } = useParams();
-  const property = properties.find((p) => p.id === id);
+  const { data: property, isLoading } = useProperty(id || "");
+
+  if (isLoading) {
+    return (
+      <Layout>
+        <div className="section-padding flex justify-center items-center min-h-[50vh]">
+          <Loader2 className="animate-spin text-accent" size={32} />
+        </div>
+      </Layout>
+    );
+  }
 
   if (!property) {
     return (
@@ -70,7 +80,6 @@ const PropertyDetail = () => {
               </div>
             </div>
 
-            {/* Sidebar */}
             <div>
               <div className="bg-card border border-border rounded-lg p-6 sticky top-24">
                 <p className="text-accent font-bold text-3xl">${property.price.toLocaleString()}</p>
