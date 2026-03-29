@@ -1,14 +1,52 @@
+import { useState, useCallback, useEffect, useRef } from "react";
 import { useParams, Link } from "react-router-dom";
-import { ArrowLeft, MapPin, BedDouble, Bath, Maximize, Check, Loader2 } from "lucide-react";
+import { ArrowLeft, MapPin, BedDouble, Bath, Maximize, Check, Loader2, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Layout from "@/components/Layout";
 import { useProperty } from "@/hooks/useProperties";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
 const PropertyDetail = () => {
   const { id } = useParams();
   const { data: property, isLoading } = useProperty(id || "");
   const { lang, t } = useLanguage();
+
+  // Build images array from both `images` and legacy `image` field
+  const allImages = property
+    ? [
+        ...(property.images && property.images.length > 0 ? property.images : []),
+        ...(property.image && !(property.images || []).includes(property.image) ? [property.image] : []),
+      ].filter(Boolean)
+    : [];
+  const images = allImages.length > 0 ? allImages : property ? [property.image] : [];
+
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const touchStartX = useRef<number | null>(null);
+
+  // Reset index when property changes
+  useEffect(() => { setActiveIndex(0); }, [id]);
+
+  const goTo = useCallback((idx: number) => {
+    if (idx === activeIndex || idx < 0 || idx >= images.length) return;
+    setIsTransitioning(true);
+    setTimeout(() => {
+      setActiveIndex(idx);
+      setTimeout(() => setIsTransitioning(false), 50);
+    }, 150);
+  }, [activeIndex, images.length]);
+
+  const handleTouchStart = (e: React.TouchEvent) => { touchStartX.current = e.touches[0].clientX; };
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartX.current === null) return;
+    const diff = touchStartX.current - e.changedTouches[0].clientX;
+    if (Math.abs(diff) > 50) {
+      if (diff > 0 && activeIndex < images.length - 1) goTo(activeIndex + 1);
+      else if (diff < 0 && activeIndex > 0) goTo(activeIndex - 1);
+    }
+    touchStartX.current = null;
+  };
 
   if (isLoading) {
     return (
@@ -44,15 +82,57 @@ const PropertyDetail = () => {
             <ArrowLeft size={16} /> {t("detail.back")}
           </Link>
 
-          <div className="rounded-lg overflow-hidden mb-8">
+          {/* Main Image */}
+          <div
+            className="relative rounded-lg overflow-hidden mb-3"
+            onTouchStart={handleTouchStart}
+            onTouchEnd={handleTouchEnd}
+          >
             <img
-              src={property.image}
+              src={images[activeIndex]}
               alt={title}
               width={800}
               height={600}
-              className="w-full h-[300px] sm:h-[450px] lg:h-[500px] object-cover"
+              className={`w-full h-[300px] sm:h-[450px] lg:h-[500px] object-cover transition-opacity duration-200 ${isTransitioning ? "opacity-0" : "opacity-100"}`}
             />
+            {images.length > 1 && (
+              <>
+                {activeIndex > 0 && (
+                  <button onClick={() => goTo(activeIndex - 1)} className="absolute left-3 top-1/2 -translate-y-1/2 bg-background/70 hover:bg-background/90 text-foreground rounded-full p-1.5 transition-colors">
+                    <ChevronLeft size={20} />
+                  </button>
+                )}
+                {activeIndex < images.length - 1 && (
+                  <button onClick={() => goTo(activeIndex + 1)} className="absolute right-3 top-1/2 -translate-y-1/2 bg-background/70 hover:bg-background/90 text-foreground rounded-full p-1.5 transition-colors">
+                    <ChevronRight size={20} />
+                  </button>
+                )}
+                <div className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-background/70 text-foreground text-xs px-2.5 py-1 rounded-full">
+                  {activeIndex + 1} / {images.length}
+                </div>
+              </>
+            )}
           </div>
+
+          {/* Thumbnails */}
+          {images.length > 1 && (
+            <ScrollArea className="w-full mb-8">
+              <div className="flex gap-2 pb-2">
+                {images.map((img, i) => (
+                  <button
+                    key={i}
+                    onClick={() => goTo(i)}
+                    className={`shrink-0 rounded-md overflow-hidden border-2 transition-all ${i === activeIndex ? "border-accent opacity-100" : "border-transparent opacity-60 hover:opacity-90"}`}
+                  >
+                    <img src={img} alt={`${title} ${i + 1}`} className="w-20 h-14 sm:w-24 sm:h-16 object-cover" />
+                  </button>
+                ))}
+              </div>
+              <ScrollBar orientation="horizontal" />
+            </ScrollArea>
+          )}
+
+          {images.length <= 1 && <div className="mb-8" />}
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
             <div className="lg:col-span-2">
