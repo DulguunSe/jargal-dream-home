@@ -77,6 +77,7 @@ export type Database = {
           features: string[]
           id: string
           image: string
+          images: string[]
           is_dubai: boolean
           location: string
           price: number
@@ -96,6 +97,7 @@ export type Database = {
           features?: string[]
           id?: string
           image: string
+          images?: string[]
           is_dubai?: boolean
           location: string
           price: number
@@ -115,6 +117,7 @@ export type Database = {
           features?: string[]
           id?: string
           image?: string
+          images?: string[]
           is_dubai?: boolean
           location?: string
           price?: number
