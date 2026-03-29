@@ -10,6 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { LogOut, Trash2, Loader2, Plus, Pencil } from "lucide-react";
 import PropertyForm from "@/components/PropertyForm";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const Admin = () => {
   const { user, isAdmin, loading: authLoading, signIn, signOut } = useAuth();
@@ -22,6 +23,7 @@ const Admin = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { t } = useLanguage();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -29,7 +31,8 @@ const Admin = () => {
     const { error } = await signIn(email, password);
     setLoginLoading(false);
     if (error) {
-      toast({ title: "Invalid credentials", description: error.message, variant: "destructive" });
+      toast({ title: "Invalid credentials", variant: "destructive" });
+      navigate("/");
     } else {
       toast({ title: "Welcome back, Admin!" });
     }
@@ -76,27 +79,27 @@ const Admin = () => {
         <section className="section-padding">
           <div className="max-w-md mx-auto">
             <div className="text-center mb-8">
-              <h1 className="font-display text-3xl font-bold text-foreground">Admin Login</h1>
-              <p className="text-muted-foreground mt-2">Sign in to manage properties</p>
+              <h1 className="font-display text-3xl font-bold text-foreground">{t("admin.login")}</h1>
+              <p className="text-muted-foreground mt-2">{t("admin.signInDesc")}</p>
             </div>
             {user && !isAdmin && (
               <div className="mb-4 p-3 bg-destructive/10 text-destructive rounded-lg text-sm text-center">
-                You don't have admin access. Please sign in with an admin account.
-                <Button variant="link" className="text-destructive underline ml-1" onClick={handleLogout}>Sign out</Button>
+                {t("admin.noAccess")}
+                <Button variant="link" className="text-destructive underline ml-1" onClick={handleLogout}>{t("admin.signOut")}</Button>
               </div>
             )}
             <form onSubmit={handleLogin} className="space-y-4 bg-card border border-border rounded-lg p-6">
               <div>
-                <label className="text-sm font-medium text-foreground mb-1 block">Email</label>
+                <label className="text-sm font-medium text-foreground mb-1 block">{t("admin.email")}</label>
                 <Input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="admin@example.com" type="email" />
               </div>
               <div>
-                <label className="text-sm font-medium text-foreground mb-1 block">Password</label>
+                <label className="text-sm font-medium text-foreground mb-1 block">{t("admin.password")}</label>
                 <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password" />
               </div>
               <Button type="submit" className="w-full bg-accent text-accent-foreground hover:bg-accent/90" disabled={loginLoading}>
                 {loginLoading ? <Loader2 className="animate-spin mr-2" size={16} /> : null}
-                Sign In
+                {t("admin.signIn")}
               </Button>
             </form>
           </div>
@@ -111,17 +114,17 @@ const Admin = () => {
         <div className="container-wide">
           <div className="flex items-center justify-between mb-8">
             <div>
-              <h1 className="font-display text-3xl font-bold text-foreground">Admin Dashboard</h1>
-              <p className="text-muted-foreground mt-1">Manage your property listings</p>
+              <h1 className="font-display text-3xl font-bold text-foreground">{t("admin.dashboard")}</h1>
+              <p className="text-muted-foreground mt-1">{t("admin.manageListings")}</p>
             </div>
             <div className="flex gap-3">
               {!showForm && (
                 <Button className="bg-accent text-accent-foreground hover:bg-accent/90" onClick={() => { setEditingProperty(null); setShowForm(true); }}>
-                  <Plus size={16} className="mr-2" /> Add Property
+                  <Plus size={16} className="mr-2" /> {t("admin.addProperty")}
                 </Button>
               )}
               <Button variant="outline" onClick={handleLogout}>
-                <LogOut size={16} className="mr-2" /> Logout
+                <LogOut size={16} className="mr-2" /> {t("admin.logout")}
               </Button>
             </div>
           </div>
@@ -140,11 +143,11 @@ const Admin = () => {
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="border-b border-border bg-secondary">
-                      <th className="text-left p-4 font-semibold text-foreground">Property</th>
-                      <th className="text-left p-4 font-semibold text-foreground hidden sm:table-cell">Location</th>
-                      <th className="text-left p-4 font-semibold text-foreground hidden md:table-cell">Type</th>
-                      <th className="text-left p-4 font-semibold text-foreground">Price</th>
-                      <th className="text-right p-4 font-semibold text-foreground">Actions</th>
+                      <th className="text-left p-4 font-semibold text-foreground">{t("admin.property")}</th>
+                      <th className="text-left p-4 font-semibold text-foreground hidden sm:table-cell">{t("admin.location")}</th>
+                      <th className="text-left p-4 font-semibold text-foreground hidden md:table-cell">{t("admin.type")}</th>
+                      <th className="text-left p-4 font-semibold text-foreground">{t("admin.price")}</th>
+                      <th className="text-right p-4 font-semibold text-foreground">{t("admin.actions")}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -153,7 +156,10 @@ const Admin = () => {
                         <td className="p-4 text-foreground font-medium">
                           <div className="flex items-center gap-3">
                             <img src={p.image} alt={p.title} className="w-10 h-10 rounded object-cover hidden sm:block" />
-                            <span>{p.title}</span>
+                            <div>
+                              <span>{p.title}</span>
+                              {p.is_dubai && <span className="ml-2 text-xs bg-accent/10 text-accent px-2 py-0.5 rounded">Dubai</span>}
+                            </div>
                           </div>
                         </td>
                         <td className="p-4 text-muted-foreground hidden sm:table-cell">{p.location}</td>

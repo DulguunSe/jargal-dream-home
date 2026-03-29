@@ -1,24 +1,46 @@
-import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
-import { Menu, X } from "lucide-react";
-import { Button } from "@/components/ui/button";
-
-const navLinks = [
-  { to: "/", label: "Home" },
-  { to: "/properties", label: "Properties" },
-  { to: "/about", label: "About" },
-  { to: "/contact", label: "Contact" },
-];
+import { useState, useEffect } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Menu, X, Globe } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+  const { lang, setLang, t } = useLanguage();
+
+  // Hidden admin: press 'A' 3 times quickly
+  useEffect(() => {
+    const times: number[] = [];
+    const handler = (e: KeyboardEvent) => {
+      if (e.key.toLowerCase() === "a") {
+        times.push(Date.now());
+        // Keep only last 3
+        while (times.length > 3) times.shift();
+        if (times.length === 3 && times[2] - times[0] < 1000) {
+          times.length = 0;
+          navigate("/admin");
+        }
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [navigate]);
+
+  const navLinks = [
+    { to: "/", label: t("nav.home") },
+    { to: "/properties", label: t("nav.properties") },
+    { to: "/dubai", label: t("nav.dubai") },
+    { to: "/about", label: t("nav.about") },
+    { to: "/contact", label: t("nav.contact") },
+  ];
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-card/90 backdrop-blur-md border-b border-border">
       <div className="container-wide flex items-center justify-between h-16 px-4 sm:px-6 lg:px-8">
-        <Link to="/" className="font-display text-xl font-bold tracking-tight text-foreground">
-          Jargal <span className="text-accent">Properties</span>
+        <Link to="/" className="flex items-center gap-2 font-display text-xl font-bold tracking-tight text-foreground">
+          <span>Jargal</span>
+          <span className="text-accent">Properties</span>
         </Link>
 
         {/* Desktop */}
@@ -34,11 +56,13 @@ const Navbar = () => {
               {link.label}
             </Link>
           ))}
-          <Link to="/admin">
-            <Button size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90">
-              Admin
-            </Button>
-          </Link>
+          <button
+            onClick={() => setLang(lang === "en" ? "mn" : "en")}
+            className="flex items-center gap-1 text-sm font-medium text-muted-foreground hover:text-accent transition-colors"
+          >
+            <Globe size={16} />
+            {lang === "en" ? "MN" : "EN"}
+          </button>
         </div>
 
         {/* Mobile toggle */}
@@ -63,11 +87,13 @@ const Navbar = () => {
                 {link.label}
               </Link>
             ))}
-            <Link to="/admin" onClick={() => setIsOpen(false)}>
-              <Button size="sm" className="w-full bg-accent text-accent-foreground hover:bg-accent/90">
-                Admin
-              </Button>
-            </Link>
+            <button
+              onClick={() => { setLang(lang === "en" ? "mn" : "en"); setIsOpen(false); }}
+              className="flex items-center gap-1 text-sm font-medium text-muted-foreground hover:text-accent py-2"
+            >
+              <Globe size={16} />
+              {lang === "en" ? "MN" : "EN"}
+            </button>
           </div>
         </div>
       )}
