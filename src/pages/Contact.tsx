@@ -44,6 +44,7 @@ const Contact = () => {
           <div className="text-center mb-12">
             <p className="text-accent font-semibold text-sm uppercase tracking-wider">{t("contact.label")}</p>
             <h1 className="font-display text-4xl font-bold text-foreground mt-2">{t("contact.title")}</h1>
+            <p className="text-muted-foreground mt-3 max-w-lg mx-auto">{t("contact.purpose")}</p>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-5xl mx-auto">
@@ -96,21 +97,33 @@ const Contact = () => {
             {/* Info + Map */}
             <div className="space-y-8">
               <div className="space-y-4">
-                {[
-                  { icon: Phone, label: t("contact.phone"), value: "+1 (555) 123-4567" },
-                  { icon: Mail, label: t("contact.email"), value: "info@jargalproperties.com" },
-                  { icon: MapPin, label: t("contact.address"), value: "123 Real Estate Ave, Suite 100" },
-                ].map(({ icon: Icon, label, value }) => (
-                  <div key={label} className="flex items-start gap-3">
-                    <div className="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center shrink-0">
-                      <Icon size={18} className="text-accent" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-foreground">{label}</p>
-                      <p className="text-muted-foreground text-sm">{value}</p>
-                    </div>
+                <a href="mailto:admin@jargalproperties.com" className="flex items-start gap-3 group">
+                  <div className="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center shrink-0 group-hover:bg-accent/20 transition-colors">
+                    <Mail size={18} className="text-accent" />
                   </div>
-                ))}
+                  <div>
+                    <p className="text-sm font-medium text-foreground">{t("contact.email")}</p>
+                    <p className="text-muted-foreground text-sm group-hover:text-accent transition-colors">admin@jargalproperties.com</p>
+                  </div>
+                </a>
+                <a href="https://wa.me/15551234567" target="_blank" rel="noopener noreferrer" className="flex items-start gap-3 group">
+                  <div className="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center shrink-0 group-hover:bg-accent/20 transition-colors">
+                    <Phone size={18} className="text-accent" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-foreground">WhatsApp</p>
+                    <p className="text-muted-foreground text-sm group-hover:text-accent transition-colors">+1 (555) 123-4567</p>
+                  </div>
+                </a>
+                <button onClick={() => document.querySelector('form')?.scrollIntoView({ behavior: 'smooth' })} className="flex items-start gap-3 group text-left w-full">
+                  <div className="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center shrink-0 group-hover:bg-accent/20 transition-colors">
+                    <MapPin size={18} className="text-accent" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-foreground">{t("contact.sendMessage")}</p>
+                    <p className="text-muted-foreground text-sm group-hover:text-accent transition-colors">{t("contact.scrollToForm")}</p>
+                  </div>
+                </button>
               </div>
 
               <div className="rounded-lg overflow-hidden border border-border h-64">

@@ -51,7 +51,7 @@ const Index = () => {
               className="flex-1 rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground"
             >
               <option value="">{t("hero.allLocations")}</option>
-              {[...new Set(allProperties.map((p) => p.location))].map((loc) => (
+              {["New York", "Los Angeles", "Miami", "San Francisco", "Dubai"].map((loc) => (
                 <option key={loc} value={loc}>{loc}</option>
               ))}
             </select>
@@ -137,7 +137,7 @@ const Index = () => {
               </Button>
             </Link>
             <Link to="/contact">
-              <Button size="lg" variant="outline" className="border-primary-foreground text-primary-foreground hover:bg-primary-foreground/10">
+              <Button size="lg" variant="outline" className="border-primary-foreground text-foreground hover:bg-primary-foreground/10">
                 {t("cta.contactUs")}
               </Button>
             </Link>

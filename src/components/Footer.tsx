@@ -1,17 +1,16 @@
 import { Link } from "react-router-dom";
-import { Phone, Mail, MapPin } from "lucide-react";
+import { Phone, Mail, MapPin, Instagram, Facebook } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
+
+const WhatsAppIcon = ({ size = 16, className = "" }: { size?: number; className?: string }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+    <path d="M3 21l1.65-3.8a9 9 0 1 1 3.4 2.9L3 21" />
+    <path d="M9 10a.5.5 0 0 0 1 0V9a.5.5 0 0 0-1 0v1a5 5 0 0 0 5 5h1a.5.5 0 0 0 0-1h-1a.5.5 0 0 0 0 1" />
+  </svg>
+);
 
 const Footer = () => {
   const { t } = useLanguage();
-
-  const links = [
-    { to: "/", label: t("nav.home") },
-    { to: "/properties", label: t("nav.properties") },
-    { to: "/dubai", label: t("nav.dubai") },
-    { to: "/about", label: t("footer.aboutUs") },
-    { to: "/contact", label: t("nav.contact") },
-  ];
 
   return (
     <footer className="bg-primary text-primary-foreground">
@@ -26,17 +25,17 @@ const Footer = () => {
             </p>
           </div>
           <div>
-            <h4 className="font-display text-lg font-semibold mb-4">{t("footer.quickLinks")}</h4>
-            <div className="space-y-2">
-              {links.map((link) => (
-                <Link
-                  key={link.to}
-                  to={link.to}
-                  className="block text-sm text-primary-foreground/70 hover:text-accent transition-colors"
-                >
-                  {link.label}
-                </Link>
-              ))}
+            <h4 className="font-display text-lg font-semibold mb-4">{t("footer.followUs")}</h4>
+            <div className="flex items-center gap-4">
+              <a href="https://instagram.com/" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-primary-foreground/10 flex items-center justify-center hover:bg-accent transition-colors">
+                <Instagram size={18} />
+              </a>
+              <a href="https://facebook.com/" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-primary-foreground/10 flex items-center justify-center hover:bg-accent transition-colors">
+                <Facebook size={18} />
+              </a>
+              <a href="https://wa.me/15551234567" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-primary-foreground/10 flex items-center justify-center hover:bg-accent transition-colors">
+                <WhatsAppIcon size={18} />
+              </a>
             </div>
           </div>
           <div>

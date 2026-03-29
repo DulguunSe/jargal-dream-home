@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,7 +8,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useProperties, type Property } from "@/hooks/useProperties";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
-import { LogOut, Trash2, Loader2, Plus, Pencil } from "lucide-react";
+import { LogOut, Trash2, Loader2, Plus, Pencil, MessageSquare } from "lucide-react";
 import PropertyForm from "@/components/PropertyForm";
 import { useLanguage } from "@/contexts/LanguageContext";
 
@@ -20,10 +20,21 @@ const Admin = () => {
   const [loginLoading, setLoginLoading] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [editingProperty, setEditingProperty] = useState<Property | null>(null);
+  const [showMessages, setShowMessages] = useState(false);
+  const [messages, setMessages] = useState<any[]>([]);
+  const [messagesLoading, setMessagesLoading] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { t } = useLanguage();
+
+  useEffect(() => {
+    if (user && isAdmin && showMessages) {
+      setMessagesLoading(true);
+      supabase.from("contact_messages").select("*").order("created_at", { ascending: false })
+        .then(({ data }) => { setMessages(data || []); setMessagesLoading(false); });
+    }
+  }, [user, isAdmin, showMessages]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -119,10 +130,13 @@ const Admin = () => {
             </div>
             <div className="flex gap-3">
               {!showForm && (
-                <Button className="bg-accent text-accent-foreground hover:bg-accent/90" onClick={() => { setEditingProperty(null); setShowForm(true); }}>
+                <Button className="bg-accent text-accent-foreground hover:bg-accent/90" onClick={() => { setEditingProperty(null); setShowForm(true); setShowMessages(false); }}>
                   <Plus size={16} className="mr-2" /> {t("admin.addProperty")}
                 </Button>
               )}
+              <Button variant={showMessages ? "default" : "outline"} onClick={() => { setShowMessages(!showMessages); setShowForm(false); }}>
+                <MessageSquare size={16} className="mr-2" /> {t("admin.messages")}
+              </Button>
               <Button variant="outline" onClick={handleLogout}>
                 <LogOut size={16} className="mr-2" /> {t("admin.logout")}
               </Button>
@@ -135,7 +149,26 @@ const Admin = () => {
             </div>
           )}
 
-          {propsLoading ? (
+          {showMessages ? (
+            messagesLoading ? (
+              <div className="flex justify-center py-16"><Loader2 className="animate-spin text-accent" size={32} /></div>
+            ) : messages.length === 0 ? (
+              <p className="text-center text-muted-foreground py-16">{t("admin.noMessages")}</p>
+            ) : (
+              <div className="bg-card border border-border rounded-lg divide-y divide-border">
+                {messages.map((m) => (
+                  <div key={m.id} className="p-4">
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="font-medium text-foreground">{m.name}</span>
+                      <span className="text-xs text-muted-foreground">{new Date(m.created_at).toLocaleDateString()}</span>
+                    </div>
+                    <p className="text-sm text-accent">{m.email}</p>
+                    <p className="text-sm text-muted-foreground mt-2">{m.message}</p>
+                  </div>
+                ))}
+              </div>
+            )
+          ) : propsLoading ? (
             <div className="flex justify-center py-16"><Loader2 className="animate-spin text-accent" size={32} /></div>
           ) : (
             <div className="bg-card border border-border rounded-lg overflow-hidden">

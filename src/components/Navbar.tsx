@@ -39,6 +39,7 @@ const Navbar = () => {
     <nav className="fixed top-0 left-0 right-0 z-50 bg-card/90 backdrop-blur-md border-b border-border">
       <div className="container-wide flex items-center justify-between h-16 px-4 sm:px-6 lg:px-8">
         <Link to="/" className="flex items-center gap-2 font-display text-xl font-bold tracking-tight text-foreground">
+          <div className="w-8 h-8 rounded-full bg-accent flex items-center justify-center text-accent-foreground text-sm font-bold">JP</div>
           <span>Jargal</span>
           <span className="text-accent">Properties</span>
         </Link>

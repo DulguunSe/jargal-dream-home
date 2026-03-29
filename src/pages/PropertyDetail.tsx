@@ -93,7 +93,7 @@ const PropertyDetail = () => {
               alt={title}
               width={800}
               height={600}
-              className={`w-full h-[300px] sm:h-[450px] lg:h-[500px] object-cover transition-opacity duration-200 ${isTransitioning ? "opacity-0" : "opacity-100"}`}
+              className={`w-full h-[300px] sm:h-[450px] lg:h-[500px] object-contain bg-muted transition-opacity duration-200 ${isTransitioning ? "opacity-0" : "opacity-100"}`}
             />
             {images.length > 1 && (
               <>
