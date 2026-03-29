@@ -100,10 +100,15 @@ const translations: Record<string, Record<Lang, string>> = {
   "contact.success": { en: "Message sent!", mn: "Мессеж илгээгдлээ!" },
   "contact.successDesc": { en: "We'll get back to you shortly.", mn: "Бид тантай удахгүй холбогдох болно." },
   "contact.fillAll": { en: "Please fill in all fields", mn: "Бүх талбарыг бөглөнө үү" },
+  "contact.purpose": { en: "Contact us for property inquiries, partnerships, or support", mn: "Үл хөдлөх хөрөнгийн лавлагаа, хамтын ажиллагаа, дэмжлэгийн талаар бидэнтэй холбоо барина уу" },
+  "contact.sendMessage": { en: "Send a Message", mn: "Мессеж илгээх" },
+  "contact.scrollToForm": { en: "Use the form to reach us", mn: "Маягтаар бидэнтэй холбогдоорой" },
+  "admin.messages": { en: "Messages", mn: "Мессежүүд" },
+  "admin.noMessages": { en: "No messages yet.", mn: "Мессеж байхгүй байна." },
 
   // Footer
   "footer.desc": { en: "Your trusted partner in finding the perfect property. We bring expertise, integrity, and personalized service to every transaction.", mn: "Төгс хөрөнгө олоход таны итгэлтэй түнш. Бид гүйлгээ бүрт мэргэжлийн ур чадвар, шударга ёс, хувь хүнд зориулсан үйлчилгээг авчирдаг." },
-  "footer.quickLinks": { en: "Quick Links", mn: "Шуурхай холбоос" },
+  "footer.followUs": { en: "Follow Us", mn: "Биднийг дагаарай" },
   "footer.contactInfo": { en: "Contact Info", mn: "Холбоо барих мэдээлэл" },
   "footer.aboutUs": { en: "About Us", mn: "Бидний тухай" },
   "footer.rights": { en: "All rights reserved.", mn: "Бүх эрх хуулиар хамгаалагдсан." },

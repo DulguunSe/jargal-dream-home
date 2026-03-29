@@ -37,7 +37,7 @@ const Properties = () => {
           <div className="flex flex-col sm:flex-row gap-3 mb-8 p-4 bg-secondary rounded-lg">
             <select value={location} onChange={(e) => setLocation(e.target.value)} className={selectClass + " flex-1"}>
               <option value="">{t("hero.allLocations")}</option>
-              {[...new Set(nonDubai.map((p) => p.location))].map((loc) => (
+              {["New York", "Los Angeles", "Miami", "San Francisco"].map((loc) => (
                 <option key={loc} value={loc}>{loc}</option>
               ))}
             </select>
