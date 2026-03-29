@@ -1,22 +1,39 @@
 import { useState } from "react";
-import { Phone, Mail, MapPin } from "lucide-react";
+import { Phone, Mail, MapPin, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import Layout from "@/components/Layout";
 import { useToast } from "@/hooks/use-toast";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { supabase } from "@/integrations/supabase/client";
 
 const Contact = () => {
   const { toast } = useToast();
+  const { t } = useLanguage();
   const [form, setForm] = useState({ name: "", email: "", message: "" });
+  const [submitted, setSubmitted] = useState(false);
+  const [sending, setSending] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.name.trim() || !form.email.trim() || !form.message.trim()) {
-      toast({ title: "Please fill in all fields", variant: "destructive" });
+      toast({ title: t("contact.fillAll"), variant: "destructive" });
       return;
     }
-    toast({ title: "Message sent!", description: "We'll get back to you shortly." });
+    setSending(true);
+    const { error } = await supabase.from("contact_messages").insert({
+      name: form.name.trim(),
+      email: form.email.trim(),
+      message: form.message.trim(),
+    });
+    setSending(false);
+    if (error) {
+      toast({ title: "Error sending message", description: error.message, variant: "destructive" });
+      return;
+    }
+    setSubmitted(true);
+    toast({ title: t("contact.success"), description: t("contact.successDesc") });
     setForm({ name: "", email: "", message: "" });
   };
 
@@ -25,54 +42,64 @@ const Contact = () => {
       <section className="section-padding">
         <div className="container-wide">
           <div className="text-center mb-12">
-            <p className="text-accent font-semibold text-sm uppercase tracking-wider">Get In Touch</p>
-            <h1 className="font-display text-4xl font-bold text-foreground mt-2">Contact Us</h1>
+            <p className="text-accent font-semibold text-sm uppercase tracking-wider">{t("contact.label")}</p>
+            <h1 className="font-display text-4xl font-bold text-foreground mt-2">{t("contact.title")}</h1>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-5xl mx-auto">
-            {/* Form */}
-            <form onSubmit={handleSubmit} className="space-y-5">
-              <div>
-                <label className="text-sm font-medium text-foreground mb-1 block">Name</label>
-                <Input
-                  value={form.name}
-                  onChange={(e) => setForm({ ...form, name: e.target.value })}
-                  placeholder="Your name"
-                  maxLength={100}
-                />
+            {submitted ? (
+              <div className="flex flex-col items-center justify-center text-center py-12">
+                <CheckCircle size={48} className="text-accent mb-4" />
+                <h2 className="font-display text-2xl font-bold text-foreground">{t("contact.success")}</h2>
+                <p className="text-muted-foreground mt-2">{t("contact.successDesc")}</p>
+                <Button className="mt-6 bg-accent text-accent-foreground hover:bg-accent/90" onClick={() => setSubmitted(false)}>
+                  {t("contact.send")}
+                </Button>
               </div>
-              <div>
-                <label className="text-sm font-medium text-foreground mb-1 block">Email</label>
-                <Input
-                  type="email"
-                  value={form.email}
-                  onChange={(e) => setForm({ ...form, email: e.target.value })}
-                  placeholder="you@example.com"
-                  maxLength={255}
-                />
-              </div>
-              <div>
-                <label className="text-sm font-medium text-foreground mb-1 block">Message</label>
-                <Textarea
-                  value={form.message}
-                  onChange={(e) => setForm({ ...form, message: e.target.value })}
-                  placeholder="How can we help you?"
-                  rows={5}
-                  maxLength={1000}
-                />
-              </div>
-              <Button type="submit" className="w-full bg-accent text-accent-foreground hover:bg-accent/90" size="lg">
-                Send Message
-              </Button>
-            </form>
+            ) : (
+              <form onSubmit={handleSubmit} className="space-y-5">
+                <div>
+                  <label className="text-sm font-medium text-foreground mb-1 block">{t("contact.name")}</label>
+                  <Input
+                    value={form.name}
+                    onChange={(e) => setForm({ ...form, name: e.target.value })}
+                    placeholder={t("contact.namePlaceholder")}
+                    maxLength={100}
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-foreground mb-1 block">{t("contact.email")}</label>
+                  <Input
+                    type="email"
+                    value={form.email}
+                    onChange={(e) => setForm({ ...form, email: e.target.value })}
+                    placeholder="you@example.com"
+                    maxLength={255}
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-foreground mb-1 block">{t("contact.message")}</label>
+                  <Textarea
+                    value={form.message}
+                    onChange={(e) => setForm({ ...form, message: e.target.value })}
+                    placeholder={t("contact.messagePlaceholder")}
+                    rows={5}
+                    maxLength={1000}
+                  />
+                </div>
+                <Button type="submit" className="w-full bg-accent text-accent-foreground hover:bg-accent/90" size="lg" disabled={sending}>
+                  {t("contact.send")}
+                </Button>
+              </form>
+            )}
 
             {/* Info + Map */}
             <div className="space-y-8">
               <div className="space-y-4">
                 {[
-                  { icon: Phone, label: "Phone", value: "+1 (555) 123-4567" },
-                  { icon: Mail, label: "Email", value: "info@jargalproperties.com" },
-                  { icon: MapPin, label: "Address", value: "123 Real Estate Ave, Suite 100" },
+                  { icon: Phone, label: t("contact.phone"), value: "+1 (555) 123-4567" },
+                  { icon: Mail, label: t("contact.email"), value: "info@jargalproperties.com" },
+                  { icon: MapPin, label: t("contact.address"), value: "123 Real Estate Ave, Suite 100" },
                 ].map(({ icon: Icon, label, value }) => (
                   <div key={label} className="flex items-start gap-3">
                     <div className="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center shrink-0">

@@ -14,6 +14,30 @@ export type Database = {
   }
   public: {
     Tables: {
+      contact_messages: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          message: string
+          name: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          message: string
+          name: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          message?: string
+          name?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -48,13 +72,16 @@ export type Database = {
           bedrooms: number
           created_at: string
           description: string
+          description_mn: string | null
           featured: boolean
           features: string[]
           id: string
           image: string
+          is_dubai: boolean
           location: string
           price: number
           title: string
+          title_mn: string | null
           type: string
           updated_at: string
         }
@@ -64,13 +91,16 @@ export type Database = {
           bedrooms: number
           created_at?: string
           description: string
+          description_mn?: string | null
           featured?: boolean
           features?: string[]
           id?: string
           image: string
+          is_dubai?: boolean
           location: string
           price: number
           title: string
+          title_mn?: string | null
           type: string
           updated_at?: string
         }
@@ -80,13 +110,16 @@ export type Database = {
           bedrooms?: number
           created_at?: string
           description?: string
+          description_mn?: string | null
           featured?: boolean
           features?: string[]
           id?: string
           image?: string
+          is_dubai?: boolean
           location?: string
           price?: number
           title?: string
+          title_mn?: string | null
           type?: string
           updated_at?: string
         }

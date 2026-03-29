@@ -6,7 +6,8 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 import type { Property } from "@/hooks/useProperties";
-import { Loader2, Upload, X, ImageIcon } from "lucide-react";
+import { Loader2, X, ImageIcon } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const PROPERTY_TYPES = ["House", "Apartment", "Villa", "Townhouse", "Condo", "Cottage"] as const;
 
@@ -17,6 +18,7 @@ interface PropertyFormProps {
 
 const emptyForm = {
   title: "",
+  title_mn: "",
   price: "",
   location: "",
   type: "House" as string,
@@ -24,16 +26,20 @@ const emptyForm = {
   bathrooms: "",
   area: "",
   description: "",
+  description_mn: "",
   features: "",
   featured: false,
+  is_dubai: false,
 };
 
 const PropertyForm = ({ property, onClose }: PropertyFormProps) => {
   const isEditing = !!property;
+  const { t } = useLanguage();
   const [form, setForm] = useState(() =>
     property
       ? {
           title: property.title,
+          title_mn: property.title_mn || "",
           price: String(property.price),
           location: property.location,
           type: property.type,
@@ -41,8 +47,10 @@ const PropertyForm = ({ property, onClose }: PropertyFormProps) => {
           bathrooms: String(property.bathrooms),
           area: String(property.area),
           description: property.description,
+          description_mn: property.description_mn || "",
           features: property.features.join(", "),
           featured: property.featured,
+          is_dubai: property.is_dubai || false,
         }
       : emptyForm
   );
@@ -95,6 +103,7 @@ const PropertyForm = ({ property, onClose }: PropertyFormProps) => {
 
       const propertyData = {
         title: form.title,
+        title_mn: form.title_mn || null,
         price: Number(form.price),
         location: form.location,
         type: form.type,
@@ -102,9 +111,11 @@ const PropertyForm = ({ property, onClose }: PropertyFormProps) => {
         bathrooms: Number(form.bathrooms) || 0,
         area: Number(form.area) || 0,
         description: form.description,
+        description_mn: form.description_mn || null,
         features: form.features.split(",").map((f) => f.trim()).filter(Boolean),
         image: imageUrl,
         featured: form.featured,
+        is_dubai: form.is_dubai,
       };
 
       if (isEditing && property) {
@@ -135,7 +146,7 @@ const PropertyForm = ({ property, onClose }: PropertyFormProps) => {
     <div className="bg-card border border-border rounded-lg p-6">
       <div className="flex items-center justify-between mb-6">
         <h2 className="font-display text-xl font-bold text-foreground">
-          {isEditing ? "Edit Property" : "Add New Property"}
+          {isEditing ? t("form.edit") : t("form.addNew")}
         </h2>
         <Button variant="ghost" size="sm" onClick={onClose}>
           <X size={16} />
@@ -145,7 +156,7 @@ const PropertyForm = ({ property, onClose }: PropertyFormProps) => {
       <form onSubmit={handleSubmit} className="space-y-5">
         {/* Image Upload */}
         <div>
-          <label className="text-sm font-medium text-foreground mb-2 block">Property Image *</label>
+          <label className="text-sm font-medium text-foreground mb-2 block">{t("form.image")} *</label>
           <div className="flex items-start gap-4">
             <div
               onClick={() => fileInputRef.current?.click()}
@@ -156,7 +167,7 @@ const PropertyForm = ({ property, onClose }: PropertyFormProps) => {
               ) : (
                 <div className="text-center text-muted-foreground">
                   <ImageIcon size={24} className="mx-auto mb-1" />
-                  <span className="text-xs">Click to upload</span>
+                  <span className="text-xs">{t("form.clickUpload")}</span>
                 </div>
               )}
             </div>
@@ -175,7 +186,7 @@ const PropertyForm = ({ property, onClose }: PropertyFormProps) => {
                 onClick={() => { setImageFile(null); setImagePreview(null); }}
                 className="text-muted-foreground"
               >
-                Remove
+                {t("form.remove")}
               </Button>
             )}
           </div>
@@ -183,72 +194,95 @@ const PropertyForm = ({ property, onClose }: PropertyFormProps) => {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className="text-sm font-medium text-foreground mb-1 block">Title *</label>
-            <Input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="Property title" />
+            <label className="text-sm font-medium text-foreground mb-1 block">{t("form.titleEn")} *</label>
+            <Input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="Property title (English)" />
           </div>
           <div>
-            <label className="text-sm font-medium text-foreground mb-1 block">Price ($) *</label>
-            <Input type="number" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} placeholder="450000" />
+            <label className="text-sm font-medium text-foreground mb-1 block">{t("form.titleMn")}</label>
+            <Input value={form.title_mn} onChange={(e) => setForm({ ...form, title_mn: e.target.value })} placeholder="Гарчиг (Монгол)" />
           </div>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className="text-sm font-medium text-foreground mb-1 block">Location *</label>
-            <Input value={form.location} onChange={(e) => setForm({ ...form, location: e.target.value })} placeholder="Downtown" />
+            <label className="text-sm font-medium text-foreground mb-1 block">{t("form.price")} *</label>
+            <Input type="number" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} placeholder="450000" />
           </div>
           <div>
-            <label className="text-sm font-medium text-foreground mb-1 block">Type</label>
+            <label className="text-sm font-medium text-foreground mb-1 block">{t("form.location")} *</label>
+            <Input value={form.location} onChange={(e) => setForm({ ...form, location: e.target.value })} placeholder="Downtown" />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label className="text-sm font-medium text-foreground mb-1 block">{t("form.type")}</label>
             <select value={form.type} onChange={(e) => setForm({ ...form, type: e.target.value })} className={selectClass}>
               {PROPERTY_TYPES.map((t) => (
                 <option key={t} value={t}>{t}</option>
               ))}
             </select>
           </div>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div>
-            <label className="text-sm font-medium text-foreground mb-1 block">Bedrooms</label>
-            <Input type="number" value={form.bedrooms} onChange={(e) => setForm({ ...form, bedrooms: e.target.value })} placeholder="3" />
+          <div className="grid grid-cols-3 gap-3">
+            <div>
+              <label className="text-sm font-medium text-foreground mb-1 block">{t("form.bedrooms")}</label>
+              <Input type="number" value={form.bedrooms} onChange={(e) => setForm({ ...form, bedrooms: e.target.value })} placeholder="3" />
+            </div>
+            <div>
+              <label className="text-sm font-medium text-foreground mb-1 block">{t("form.bathrooms")}</label>
+              <Input type="number" value={form.bathrooms} onChange={(e) => setForm({ ...form, bathrooms: e.target.value })} placeholder="2" />
+            </div>
+            <div>
+              <label className="text-sm font-medium text-foreground mb-1 block">{t("form.area")}</label>
+              <Input type="number" value={form.area} onChange={(e) => setForm({ ...form, area: e.target.value })} placeholder="1800" />
+            </div>
           </div>
-          <div>
-            <label className="text-sm font-medium text-foreground mb-1 block">Bathrooms</label>
-            <Input type="number" value={form.bathrooms} onChange={(e) => setForm({ ...form, bathrooms: e.target.value })} placeholder="2" />
-          </div>
-          <div>
-            <label className="text-sm font-medium text-foreground mb-1 block">Area (sqft)</label>
-            <Input type="number" value={form.area} onChange={(e) => setForm({ ...form, area: e.target.value })} placeholder="1800" />
-          </div>
-        </div>
-
-        <div>
-          <label className="text-sm font-medium text-foreground mb-1 block">Description *</label>
-          <Textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="Describe the property..." rows={4} />
         </div>
 
         <div>
-          <label className="text-sm font-medium text-foreground mb-1 block">Features (comma-separated)</label>
+          <label className="text-sm font-medium text-foreground mb-1 block">{t("form.descEn")} *</label>
+          <Textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="Describe the property (English)..." rows={3} />
+        </div>
+
+        <div>
+          <label className="text-sm font-medium text-foreground mb-1 block">{t("form.descMn")}</label>
+          <Textarea value={form.description_mn} onChange={(e) => setForm({ ...form, description_mn: e.target.value })} placeholder="Тодорхойлолт (Монгол)..." rows={3} />
+        </div>
+
+        <div>
+          <label className="text-sm font-medium text-foreground mb-1 block">{t("form.features")}</label>
           <Input value={form.features} onChange={(e) => setForm({ ...form, features: e.target.value })} placeholder="City View, Gym, Parking, Pool" />
         </div>
 
-        <div className="flex items-center gap-2">
-          <input
-            type="checkbox"
-            id="featured"
-            checked={form.featured}
-            onChange={(e) => setForm({ ...form, featured: e.target.checked })}
-            className="rounded border-input"
-          />
-          <label htmlFor="featured" className="text-sm text-foreground">Mark as featured property</label>
+        <div className="flex items-center gap-6">
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              id="featured"
+              checked={form.featured}
+              onChange={(e) => setForm({ ...form, featured: e.target.checked })}
+              className="rounded border-input"
+            />
+            <label htmlFor="featured" className="text-sm text-foreground">{t("form.featured")}</label>
+          </div>
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              id="is_dubai"
+              checked={form.is_dubai}
+              onChange={(e) => setForm({ ...form, is_dubai: e.target.checked })}
+              className="rounded border-input"
+            />
+            <label htmlFor="is_dubai" className="text-sm text-foreground">{t("form.isDubai")}</label>
+          </div>
         </div>
 
         <div className="flex gap-3 pt-2">
           <Button type="submit" className="bg-accent text-accent-foreground hover:bg-accent/90" disabled={saving}>
             {saving && <Loader2 className="animate-spin mr-2" size={16} />}
-            {isEditing ? "Update Property" : "Create Property"}
+            {isEditing ? t("form.update") : t("form.create")}
           </Button>
-          <Button type="button" variant="outline" onClick={onClose}>Cancel</Button>
+          <Button type="button" variant="outline" onClick={onClose}>{t("form.cancel")}</Button>
         </div>
       </form>
     </div>
