@@ -110,17 +110,23 @@ const PropertyForm = ({ property, onClose }: PropertyFormProps) => {
       toast({ title: "Please fill in all required fields", variant: "destructive" });
       return;
     }
-    if (!isEditing && !imageFile && !imagePreview) {
-      toast({ title: "Please upload a property image", variant: "destructive" });
+    if (!isEditing && imagePreviews.length === 0) {
+      toast({ title: "Please upload at least one property image", variant: "destructive" });
       return;
     }
 
     setSaving(true);
     try {
-      let imageUrl = property?.image || "";
-      if (imageFile) {
-        imageUrl = await uploadImage(imageFile);
+      // Upload new files
+      const newUrls: string[] = [];
+      for (const file of imageFiles) {
+        newUrls.push(await uploadImage(file));
       }
+
+      // Combine existing URLs (non-blob) with newly uploaded
+      const existingUrlCount = imagePreviews.length - imageFiles.length;
+      const existingUrls = imagePreviews.slice(0, existingUrlCount).filter(u => !u.startsWith("blob:"));
+      const allImageUrls = [...existingUrls, ...newUrls];
 
       const propertyData = {
         title: form.title,
@@ -134,7 +140,8 @@ const PropertyForm = ({ property, onClose }: PropertyFormProps) => {
         description: form.description,
         description_mn: form.description_mn || null,
         features: form.features.split(",").map((f) => f.trim()).filter(Boolean),
-        image: imageUrl,
+        image: allImageUrls[0] || property?.image || "",
+        images: allImageUrls,
         featured: form.featured,
         is_dubai: form.is_dubai,
       };
@@ -178,39 +185,37 @@ const PropertyForm = ({ property, onClose }: PropertyFormProps) => {
         {/* Image Upload */}
         <div>
           <label className="text-sm font-medium text-foreground mb-2 block">{t("form.image")} *</label>
-          <div className="flex items-start gap-4">
+          <div className="flex flex-wrap items-start gap-3">
+            {imagePreviews.map((src, i) => (
+              <div key={i} className="relative group">
+                <img src={src} alt={`Preview ${i + 1}`} className="w-20 h-14 rounded-md object-cover border border-border" />
+                <button
+                  type="button"
+                  onClick={() => removeImage(i)}
+                  className="absolute -top-1.5 -right-1.5 bg-destructive text-destructive-foreground rounded-full w-5 h-5 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity"
+                >
+                  ×
+                </button>
+              </div>
+            ))}
             <div
               onClick={() => fileInputRef.current?.click()}
-              className="w-40 h-28 rounded-lg border-2 border-dashed border-border hover:border-accent cursor-pointer flex items-center justify-center overflow-hidden transition-colors"
+              className="w-20 h-14 rounded-md border-2 border-dashed border-border hover:border-accent cursor-pointer flex items-center justify-center transition-colors"
             >
-              {imagePreview ? (
-                <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
-              ) : (
-                <div className="text-center text-muted-foreground">
-                  <ImageIcon size={24} className="mx-auto mb-1" />
-                  <span className="text-xs">{t("form.clickUpload")}</span>
-                </div>
-              )}
+              <div className="text-center text-muted-foreground">
+                <ImageIcon size={18} className="mx-auto" />
+                <span className="text-[10px]">Add</span>
+              </div>
             </div>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              onChange={handleImageChange}
-              className="hidden"
-            />
-            {imagePreview && (
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                onClick={() => { setImageFile(null); setImagePreview(null); }}
-                className="text-muted-foreground"
-              >
-                {t("form.remove")}
-              </Button>
-            )}
           </div>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            multiple
+            onChange={handleImageChange}
+            className="hidden"
+          />
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
