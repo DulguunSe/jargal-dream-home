@@ -54,22 +54,43 @@ const PropertyForm = ({ property, onClose }: PropertyFormProps) => {
         }
       : emptyForm
   );
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(property?.image || null);
+  // Multiple images support
+  const [imageFiles, setImageFiles] = useState<File[]>([]);
+  const [imagePreviews, setImagePreviews] = useState<string[]>(() => {
+    if (property) {
+      const existing = property.images && property.images.length > 0 ? [...property.images] : [];
+      if (property.image && !existing.includes(property.image)) existing.unshift(property.image);
+      return existing.filter(Boolean);
+    }
+    return [];
+  });
   const [saving, setSaving] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    if (!file.type.startsWith("image/")) {
-      toast({ title: "Please select an image file", variant: "destructive" });
+    const files = Array.from(e.target.files || []);
+    const validFiles = files.filter(f => f.type.startsWith("image/"));
+    if (validFiles.length === 0) {
+      toast({ title: "Please select image files", variant: "destructive" });
       return;
     }
-    setImageFile(file);
-    setImagePreview(URL.createObjectURL(file));
+    setImageFiles(prev => [...prev, ...validFiles]);
+    setImagePreviews(prev => [...prev, ...validFiles.map(f => URL.createObjectURL(f))]);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  const removeImage = (index: number) => {
+    // Check if this is an existing URL or a new file
+    const existingUrlCount = imagePreviews.length - imageFiles.length;
+    if (index < existingUrlCount) {
+      setImagePreviews(prev => prev.filter((_, i) => i !== index));
+    } else {
+      const fileIndex = index - existingUrlCount;
+      setImageFiles(prev => prev.filter((_, i) => i !== fileIndex));
+      setImagePreviews(prev => prev.filter((_, i) => i !== index));
+    }
   };
 
   const uploadImage = async (file: File): Promise<string> => {
