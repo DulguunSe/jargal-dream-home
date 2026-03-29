@@ -165,17 +165,25 @@ const PropertyDetail = () => {
               </div>
             </div>
 
-            <div>
-              <div className="bg-card border border-border rounded-lg p-6 sticky top-24">
-                <p className="text-accent font-bold text-3xl">${property.price.toLocaleString()}</p>
-                <p className="text-muted-foreground text-sm mt-1">{t("detail.askingPrice")}</p>
-                <Link to="/contact" className="block mt-6">
-                  <Button className="w-full bg-accent text-accent-foreground hover:bg-accent/90" size="lg">
-                    {t("detail.contact")}
-                  </Button>
-                </Link>
+              <div>
+                <div className="bg-card border border-border rounded-lg p-6 sticky top-24">
+                  <p className="text-accent font-bold text-3xl">${property.price.toLocaleString()}</p>
+                  <p className="text-muted-foreground text-sm mt-1">{t("detail.askingPrice")}</p>
+                  {((property as any).status === "sold" || (property as any).status === "rented") ? (
+                    <div className="mt-6 text-center">
+                      <span className={`inline-block text-sm font-semibold px-4 py-2 rounded-full ${(property as any).status === "sold" ? "bg-red-100 text-red-800" : "bg-orange-100 text-orange-800"}`}>
+                        {t("status.notAvailable")}
+                      </span>
+                    </div>
+                  ) : (
+                    <Link to="/contact" className="block mt-6">
+                      <Button className="w-full bg-accent text-accent-foreground hover:bg-accent/90" size="lg">
+                        {t("detail.contact")}
+                      </Button>
+                    </Link>
+                  )}
+                </div>
               </div>
-            </div>
           </div>
         </div>
       </section>
