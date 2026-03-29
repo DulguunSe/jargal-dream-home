@@ -81,6 +81,7 @@ export type Database = {
           is_dubai: boolean
           location: string
           price: number
+          status: string
           title: string
           title_mn: string | null
           type: string
@@ -101,6 +102,7 @@ export type Database = {
           is_dubai?: boolean
           location: string
           price: number
+          status?: string
           title: string
           title_mn?: string | null
           type: string
@@ -121,6 +123,7 @@ export type Database = {
           is_dubai?: boolean
           location?: string
           price?: number
+          status?: string
           title?: string
           title_mn?: string | null
           type?: string

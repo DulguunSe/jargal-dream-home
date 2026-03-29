@@ -16,6 +16,8 @@ interface PropertyFormProps {
   onClose: () => void;
 }
 
+const PROPERTY_STATUSES = ["available", "sold", "rented"] as const;
+
 const emptyForm = {
   title: "",
   title_mn: "",
@@ -30,6 +32,7 @@ const emptyForm = {
   features: "",
   featured: false,
   is_dubai: false,
+  status: "available" as string,
 };
 
 const PropertyForm = ({ property, onClose }: PropertyFormProps) => {
@@ -51,6 +54,7 @@ const PropertyForm = ({ property, onClose }: PropertyFormProps) => {
           features: property.features.join(", "),
           featured: property.featured,
           is_dubai: property.is_dubai || false,
+          status: (property as any).status || "available",
         }
       : emptyForm
   );
@@ -144,7 +148,8 @@ const PropertyForm = ({ property, onClose }: PropertyFormProps) => {
         images: allImageUrls,
         featured: form.featured,
         is_dubai: form.is_dubai,
-      };
+        status: form.status,
+      } as any;
 
       if (isEditing && property) {
         const { error } = await supabase
@@ -278,6 +283,15 @@ const PropertyForm = ({ property, onClose }: PropertyFormProps) => {
         <div>
           <label className="text-sm font-medium text-foreground mb-1 block">{t("form.features")}</label>
           <Input value={form.features} onChange={(e) => setForm({ ...form, features: e.target.value })} placeholder="City View, Gym, Parking, Pool" />
+        </div>
+
+        <div>
+          <label className="text-sm font-medium text-foreground mb-1 block">{t("form.status")}</label>
+          <select value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value })} className={selectClass}>
+            {PROPERTY_STATUSES.map((s) => (
+              <option key={s} value={s} className="capitalize">{t(`admin.status.${s}`)}</option>
+            ))}
+          </select>
         </div>
 
         <div className="flex items-center gap-6">

@@ -3,9 +3,16 @@ import { MapPin, BedDouble, Bath, Maximize } from "lucide-react";
 import type { Property } from "@/hooks/useProperties";
 import { useLanguage } from "@/contexts/LanguageContext";
 
+const statusBadge: Record<string, string> = {
+  available: "bg-green-500 text-white",
+  sold: "bg-red-500 text-white",
+  rented: "bg-orange-500 text-white",
+};
+
 const PropertyCard = ({ property }: { property: Property }) => {
-  const { lang } = useLanguage();
+  const { lang, t } = useLanguage();
   const title = lang === "mn" && property.title_mn ? property.title_mn : property.title;
+  const status = (property as any).status || "available";
 
   return (
     <Link
@@ -23,6 +30,9 @@ const PropertyCard = ({ property }: { property: Property }) => {
         />
         <span className="absolute top-3 left-3 bg-accent text-accent-foreground text-xs font-semibold px-3 py-1 rounded-full">
           {property.type}
+        </span>
+        <span className={`absolute top-3 right-3 text-xs font-semibold px-3 py-1 rounded-full capitalize ${statusBadge[status]}`}>
+          {t(`admin.status.${status}`)}
         </span>
       </div>
       <div className="p-5">

@@ -153,6 +153,17 @@ const translations: Record<string, Record<Lang, string>> = {
   "form.create": { en: "Create Property", mn: "Үл хөдлөх үүсгэх" },
   "form.update": { en: "Update Property", mn: "Шинэчлэх" },
   "form.cancel": { en: "Cancel", mn: "Цуцлах" },
+  "form.status": { en: "Status", mn: "Төлөв" },
+
+  // Admin status & search
+  "admin.status.all": { en: "All", mn: "Бүгд" },
+  "admin.status.available": { en: "Available", mn: "Боломжтой" },
+  "admin.status.sold": { en: "Sold", mn: "Зарагдсан" },
+  "admin.status.rented": { en: "Rented", mn: "Түрээслэгдсэн" },
+  "admin.statusLabel": { en: "Status", mn: "Төлөв" },
+  "admin.searchPlaceholder": { en: "Search by title or location...", mn: "Гарчиг эсвэл байршлаар хайх..." },
+  "admin.noResults": { en: "No properties match your search.", mn: "Хайлтад тохирох үл хөдлөх олдсонгүй." },
+  "status.notAvailable": { en: "Not Available", mn: "Боломжгүй" },
 };
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
