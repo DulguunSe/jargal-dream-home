@@ -12,7 +12,6 @@ const translations: Record<string, Record<Lang, string>> = {
   // Navbar
   "nav.home": { en: "Home", mn: "Нүүр" },
   "nav.properties": { en: "Properties", mn: "Үл хөдлөх" },
-  "nav.dubai": { en: "Dubai", mn: "Дубай" },
   "nav.about": { en: "About", mn: "Бидний тухай" },
   "nav.contact": { en: "Contact", mn: "Холбоо барих" },
 
@@ -51,12 +50,13 @@ const translations: Record<string, Record<Lang, string>> = {
   "properties.title": { en: "Our Properties", mn: "Манай үл хөдлөх" },
   "properties.noMatch": { en: "No properties match your filters.", mn: "Шүүлтүүрт тохирох үл хөдлөх олдсонгүй." },
 
-  // Dubai page
-  "dubai.label": { en: "Dubai", mn: "Дубай" },
-  "dubai.title": { en: "Dubai Properties", mn: "Дубайн үл хөдлөх" },
-  "dubai.noMatch": { en: "No Dubai properties available yet.", mn: "Дубайн үл хөдлөх одоогоор байхгүй байна." },
+  // Filters
+  "filter.allCountries": { en: "All Countries", mn: "Бүх улс" },
+  "filter.allStatuses": { en: "All Statuses", mn: "Бүх төлөв" },
 
-  // Property detail
+  // Form
+  "form.country": { en: "Country", mn: "Улс" },
+
   "detail.back": { en: "Back to Properties", mn: "Буцах" },
   "detail.notFound": { en: "Property Not Found", mn: "Үл хөдлөх олдсонгүй" },
   "detail.description": { en: "Description", mn: "Тодорхойлолт" },

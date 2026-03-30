@@ -51,7 +51,7 @@ const Index = () => {
               className="flex-1 rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground"
             >
               <option value="">{t("hero.allLocations")}</option>
-              {["New York", "Los Angeles", "Miami", "San Francisco", "Dubai"].map((loc) => (
+              {[...new Set(allProperties.map((p) => p.location))].map((loc) => (
                 <option key={loc} value={loc}>{loc}</option>
               ))}
             </select>
