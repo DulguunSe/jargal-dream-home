@@ -245,7 +245,7 @@ const Admin = () => {
                                 <img src={p.image} alt={p.title} className="w-10 h-10 rounded object-cover hidden sm:block" />
                                 <div>
                                   <span>{p.title}</span>
-                                  {p.is_dubai && <span className="ml-2 text-xs bg-accent/10 text-accent px-2 py-0.5 rounded">Dubai</span>}
+                                  {(p as any).country && <span className="ml-2 text-xs bg-accent/10 text-accent px-2 py-0.5 rounded">{(p as any).country}</span>}
                                 </div>
                               </div>
                             </td>

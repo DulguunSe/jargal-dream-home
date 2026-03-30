@@ -10,6 +10,7 @@ import { Loader2, X, ImageIcon } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 const PROPERTY_TYPES = ["House", "Apartment", "Villa", "Townhouse", "Condo", "Cottage"] as const;
+const COUNTRIES = ["Mongolia", "UAE", "USA", "South Korea", "Japan", "China"] as const;
 
 interface PropertyFormProps {
   property?: Property | null;
@@ -23,6 +24,7 @@ const emptyForm = {
   title_mn: "",
   price: "",
   location: "",
+  country: "Mongolia" as string,
   type: "House" as string,
   bedrooms: "",
   bathrooms: "",
@@ -31,7 +33,6 @@ const emptyForm = {
   description_mn: "",
   features: "",
   featured: false,
-  is_dubai: false,
   status: "available" as string,
 };
 
@@ -45,6 +46,7 @@ const PropertyForm = ({ property, onClose }: PropertyFormProps) => {
           title_mn: property.title_mn || "",
           price: String(property.price),
           location: property.location,
+          country: (property as any).country || "Mongolia",
           type: property.type,
           bedrooms: String(property.bedrooms),
           bathrooms: String(property.bathrooms),
@@ -53,8 +55,7 @@ const PropertyForm = ({ property, onClose }: PropertyFormProps) => {
           description_mn: property.description_mn || "",
           features: property.features.join(", "),
           featured: property.featured,
-          is_dubai: property.is_dubai || false,
-          status: (property as any).status || "available",
+          status: property.status || "available",
         }
       : emptyForm
   );
@@ -137,6 +138,7 @@ const PropertyForm = ({ property, onClose }: PropertyFormProps) => {
         title_mn: form.title_mn || null,
         price: Number(form.price),
         location: form.location,
+        country: form.country,
         type: form.type,
         bedrooms: Number(form.bedrooms) || 0,
         bathrooms: Number(form.bathrooms) || 0,
@@ -147,7 +149,7 @@ const PropertyForm = ({ property, onClose }: PropertyFormProps) => {
         image: allImageUrls[0] || property?.image || "",
         images: allImageUrls,
         featured: form.featured,
-        is_dubai: form.is_dubai,
+        is_dubai: form.country === "UAE",
         status: form.status,
       } as any;
 
@@ -234,10 +236,18 @@ const PropertyForm = ({ property, onClose }: PropertyFormProps) => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div>
             <label className="text-sm font-medium text-foreground mb-1 block">{t("form.price")} *</label>
             <Input type="number" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} placeholder="450000" />
+          </div>
+          <div>
+            <label className="text-sm font-medium text-foreground mb-1 block">{t("form.country")} *</label>
+            <select value={form.country} onChange={(e) => setForm({ ...form, country: e.target.value })} className={selectClass}>
+              {COUNTRIES.map((c) => (
+                <option key={c} value={c}>{c}</option>
+              ))}
+            </select>
           </div>
           <div>
             <label className="text-sm font-medium text-foreground mb-1 block">{t("form.location")} *</label>
@@ -294,8 +304,7 @@ const PropertyForm = ({ property, onClose }: PropertyFormProps) => {
           </select>
         </div>
 
-        <div className="flex items-center gap-6">
-          <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2">
             <input
               type="checkbox"
               id="featured"
@@ -304,17 +313,6 @@ const PropertyForm = ({ property, onClose }: PropertyFormProps) => {
               className="rounded border-input"
             />
             <label htmlFor="featured" className="text-sm text-foreground">{t("form.featured")}</label>
-          </div>
-          <div className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              id="is_dubai"
-              checked={form.is_dubai}
-              onChange={(e) => setForm({ ...form, is_dubai: e.target.checked })}
-              className="rounded border-input"
-            />
-            <label htmlFor="is_dubai" className="text-sm text-foreground">{t("form.isDubai")}</label>
-          </div>
         </div>
 
         <div className="flex gap-3 pt-2">

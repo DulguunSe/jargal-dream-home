@@ -6,22 +6,26 @@ import { useProperties } from "@/hooks/useProperties";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Loader2 } from "lucide-react";
 
+const PROPERTY_STATUSES = ["all", "available", "sold", "rented"] as const;
+
 const Properties = () => {
   const [searchParams] = useSearchParams();
-  const [location, setLocation] = useState(searchParams.get("location") || "");
+  const [country, setCountry] = useState(searchParams.get("country") || "");
   const [type, setType] = useState(searchParams.get("type") || "");
+  const [status, setStatus] = useState(searchParams.get("status") || "");
   const { data: properties = [], isLoading } = useProperties();
   const { t } = useLanguage();
 
-  const nonDubai = useMemo(() => properties.filter((p) => !p.is_dubai), [properties]);
+  const countries = useMemo(() => [...new Set(properties.map((p) => (p as any).country).filter(Boolean))], [properties]);
 
   const filtered = useMemo(() => {
-    return nonDubai.filter((p) => {
-      if (location && p.location !== location) return false;
+    return properties.filter((p) => {
+      if (country && (p as any).country !== country) return false;
       if (type && p.type !== type) return false;
+      if (status && status !== "all" && p.status !== status) return false;
       return true;
     });
-  }, [nonDubai, location, type]);
+  }, [properties, country, type, status]);
 
   const selectClass = "rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground";
 
@@ -35,16 +39,22 @@ const Properties = () => {
           </div>
 
           <div className="flex flex-col sm:flex-row gap-3 mb-8 p-4 bg-secondary rounded-lg">
-            <select value={location} onChange={(e) => setLocation(e.target.value)} className={selectClass + " flex-1"}>
-              <option value="">{t("hero.allLocations")}</option>
-              {["New York", "Los Angeles", "Miami", "San Francisco"].map((loc) => (
-                <option key={loc} value={loc}>{loc}</option>
+            <select value={country} onChange={(e) => setCountry(e.target.value)} className={selectClass + " flex-1"}>
+              <option value="">{t("filter.allCountries")}</option>
+              {countries.map((c) => (
+                <option key={c} value={c}>{c}</option>
               ))}
             </select>
             <select value={type} onChange={(e) => setType(e.target.value)} className={selectClass + " flex-1"}>
               <option value="">{t("hero.allTypes")}</option>
-              {[...new Set(nonDubai.map((p) => p.type))].map((t) => (
+              {[...new Set(properties.map((p) => p.type))].map((t) => (
                 <option key={t} value={t}>{t}</option>
+              ))}
+            </select>
+            <select value={status} onChange={(e) => setStatus(e.target.value)} className={selectClass + " flex-1"}>
+              <option value="">{t("filter.allStatuses")}</option>
+              {PROPERTY_STATUSES.filter(s => s !== "all").map((s) => (
+                <option key={s} value={s} className="capitalize">{t(`admin.status.${s}`)}</option>
               ))}
             </select>
           </div>
