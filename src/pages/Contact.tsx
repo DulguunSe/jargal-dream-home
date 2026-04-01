@@ -154,7 +154,7 @@ const Contact = () => {
                   </div>
                 </a>
 
-                <a href="https://instagram.com/Jargal_Properties" target="_blank" rel="noopener noreferrer" className="flex items-start gap-3 group">
+                <a href="https://www.instagram.com/jargal_properties/" target="_blank" rel="noopener noreferrer" className="flex items-start gap-3 group">
                   <div className="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center shrink-0 group-hover:bg-accent/20 transition-colors">
                     <Instagram size={18} className="text-accent" />
                   </div>
