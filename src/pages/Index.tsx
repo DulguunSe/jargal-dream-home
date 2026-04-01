@@ -6,7 +6,7 @@ import PropertyCard from "@/components/PropertyCard";
 import { useFeaturedProperties, useProperties } from "@/hooks/useProperties";
 import { useLanguage } from "@/contexts/LanguageContext";
 import heroImage from "@/assets/hero-property.jpg";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 
 const Index = () => {
@@ -14,15 +14,26 @@ const Index = () => {
   const { data: allProperties = [] } = useProperties();
   const navigate = useNavigate();
   const { t } = useLanguage();
-  const [search, setSearch] = useState({ location: "", type: "" });
+  const [search, setSearch] = useState({ location: "", type: "", country: "" });
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     const params = new URLSearchParams();
+    if (search.country) params.set("country", search.country);
     if (search.location) params.set("location", search.location);
     if (search.type) params.set("type", search.type);
     navigate(`/properties?${params.toString()}`);
   };
+
+  const countries = useMemo(() => [...new Set(allProperties.map((p) => (p as any).country).filter(Boolean))], [allProperties]);
+
+  const filteredFeatured = useMemo(() => {
+    return featured.filter((p) => {
+      if (search.country && (p as any).country !== search.country) return false;
+      if (search.type && p.type !== search.type) return false;
+      return true;
+    });
+  }, [featured, search.country, search.type]);
 
   return (
     <Layout>
@@ -46,13 +57,13 @@ const Index = () => {
 
           <form onSubmit={handleSearch} className="mt-8 bg-card/95 backdrop-blur rounded-lg p-4 flex flex-col sm:flex-row gap-3">
             <select
-              value={search.location}
-              onChange={(e) => setSearch({ ...search, location: e.target.value })}
+              value={search.country}
+              onChange={(e) => setSearch({ ...search, country: e.target.value })}
               className="flex-1 rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground"
             >
-              <option value="">{t("hero.allLocations")}</option>
-              {[...new Set(allProperties.map((p) => p.location))].map((loc) => (
-                <option key={loc} value={loc}>{loc}</option>
+              <option value="">{t("filter.allCountries")}</option>
+              {countries.map((c) => (
+                <option key={c} value={c}>{c}</option>
               ))}
             </select>
             <select
@@ -84,11 +95,15 @@ const Index = () => {
               {t("featured.viewAll")} <ArrowRight size={16} />
             </Link>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {featured.map((p) => (
-              <PropertyCard key={p.id} property={p} />
-            ))}
-          </div>
+          {filteredFeatured.length === 0 && featured.length > 0 ? (
+            <p className="text-center text-muted-foreground py-8">{t("properties.noMatch")}</p>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {(filteredFeatured.length > 0 ? filteredFeatured : featured).map((p) => (
+                <PropertyCard key={p.id} property={p} />
+              ))}
+            </div>
+          )}
           <div className="mt-8 text-center sm:hidden">
             <Link to="/properties">
               <Button className="bg-accent text-accent-foreground hover:bg-accent/90">{t("featured.viewAllProperties")}</Button>

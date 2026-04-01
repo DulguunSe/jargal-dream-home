@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Phone, Mail, MapPin, CheckCircle } from "lucide-react";
+import { Phone, Mail, CheckCircle, Instagram, Facebook } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -7,6 +7,22 @@ import Layout from "@/components/Layout";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { supabase } from "@/integrations/supabase/client";
+
+const WhatsAppIcon = ({ size = 16, className = "" }: { size?: number; className?: string }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+    <path d="M3 21l1.65-3.8a9 9 0 1 1 3.4 2.9L3 21" />
+    <path d="M9 10a.5.5 0 0 0 1 0V9a.5.5 0 0 0-1 0v1a5 5 0 0 0 5 5h1a.5.5 0 0 0 0-1h-1a.5.5 0 0 0 0 1" />
+  </svg>
+);
+
+const ViberIcon = ({ size = 16, className = "" }: { size?: number; className?: string }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+    <path d="M12 2C6.48 2 2 6.48 2 12c0 1.85.5 3.58 1.37 5.07L2 22l4.93-1.37A9.96 9.96 0 0 0 12 22c5.52 0 10-4.48 10-10S17.52 2 12 2z" />
+    <path d="M12 7a5 5 0 0 1 5 5" />
+    <path d="M12 9a3 3 0 0 1 3 3" />
+    <circle cx="12" cy="12" r="1" />
+  </svg>
+);
 
 const Contact = () => {
   const { toast } = useToast();
@@ -94,49 +110,69 @@ const Contact = () => {
               </form>
             )}
 
-            {/* Info + Map */}
-            <div className="space-y-8">
+            {/* Contact Info */}
+            <div className="space-y-6">
               <div className="space-y-4">
-                <a href="mailto:admin@jargalproperties.com" className="flex items-start gap-3 group">
+                <a href="mailto:jargalproperties28@gmail.com" className="flex items-start gap-3 group">
                   <div className="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center shrink-0 group-hover:bg-accent/20 transition-colors">
                     <Mail size={18} className="text-accent" />
                   </div>
                   <div>
                     <p className="text-sm font-medium text-foreground">{t("contact.email")}</p>
-                    <p className="text-muted-foreground text-sm group-hover:text-accent transition-colors">admin@jargalproperties.com</p>
+                    <p className="text-muted-foreground text-sm group-hover:text-accent transition-colors">jargalproperties28@gmail.com</p>
                   </div>
                 </a>
-                <a href="https://wa.me/15551234567" target="_blank" rel="noopener noreferrer" className="flex items-start gap-3 group">
+
+                <a href="tel:+97689991628" className="flex items-start gap-3 group">
                   <div className="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center shrink-0 group-hover:bg-accent/20 transition-colors">
                     <Phone size={18} className="text-accent" />
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-foreground">WhatsApp</p>
-                    <p className="text-muted-foreground text-sm group-hover:text-accent transition-colors">+1 (555) 123-4567</p>
+                    <p className="text-sm font-medium text-foreground">{t("contact.phone")}</p>
+                    <p className="text-muted-foreground text-sm group-hover:text-accent transition-colors">+976 8999-1628</p>
+                    <p className="text-muted-foreground text-sm group-hover:text-accent transition-colors">+976 9967-1628</p>
                   </div>
                 </a>
-                <button onClick={() => document.querySelector('form')?.scrollIntoView({ behavior: 'smooth' })} className="flex items-start gap-3 group text-left w-full">
+
+                <a href="https://wa.me/97689991628" target="_blank" rel="noopener noreferrer" className="flex items-start gap-3 group">
                   <div className="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center shrink-0 group-hover:bg-accent/20 transition-colors">
-                    <MapPin size={18} className="text-accent" />
+                    <WhatsAppIcon size={18} className="text-accent" />
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-foreground">{t("contact.sendMessage")}</p>
-                    <p className="text-muted-foreground text-sm group-hover:text-accent transition-colors">{t("contact.scrollToForm")}</p>
+                    <p className="text-sm font-medium text-foreground">WhatsApp</p>
+                    <p className="text-muted-foreground text-sm group-hover:text-accent transition-colors">+976 8999-1628</p>
                   </div>
-                </button>
-              </div>
+                </a>
 
-              <div className="rounded-lg overflow-hidden border border-border h-64">
-                <iframe
-                  title="Location Map"
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3153.835434509374!2d-122.4194154!3d37.7749295!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x80858064f0f1c1a1%3A0x7a81b3c5b3e5a06!2sSan+Francisco%2C+CA!5e0!3m2!1sen!2sus!4v1"
-                  width="100%"
-                  height="100%"
-                  style={{ border: 0 }}
-                  allowFullScreen
-                  loading="lazy"
-                  referrerPolicy="no-referrer-when-downgrade"
-                />
+                <a href="viber://chat?number=97689991628" className="flex items-start gap-3 group">
+                  <div className="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center shrink-0 group-hover:bg-accent/20 transition-colors">
+                    <ViberIcon size={18} className="text-accent" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-foreground">Viber</p>
+                    <p className="text-muted-foreground text-sm group-hover:text-accent transition-colors">+976 8999-1628</p>
+                  </div>
+                </a>
+
+                <a href="https://instagram.com/Jargal_Properties" target="_blank" rel="noopener noreferrer" className="flex items-start gap-3 group">
+                  <div className="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center shrink-0 group-hover:bg-accent/20 transition-colors">
+                    <Instagram size={18} className="text-accent" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-foreground">Instagram</p>
+                    <p className="text-muted-foreground text-sm group-hover:text-accent transition-colors">@Jargal_Properties</p>
+                  </div>
+                </a>
+
+                <a href="https://www.facebook.com/share/1Nb3TSLt2u/" target="_blank" rel="noopener noreferrer" className="flex items-start gap-3 group">
+                  <div className="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center shrink-0 group-hover:bg-accent/20 transition-colors">
+                    <Facebook size={18} className="text-accent" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-foreground">Facebook</p>
+                    <p className="text-muted-foreground text-sm group-hover:text-accent transition-colors">Jargal Properties</p>
+                  </div>
+                </a>
               </div>
             </div>
           </div>

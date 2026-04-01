@@ -4,7 +4,7 @@ import type { Property } from "@/hooks/useProperties";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 const statusBadge: Record<string, string> = {
-  available: "bg-green-500 text-white",
+  available: "bg-accent/80 text-accent-foreground",
   sold: "bg-red-500 text-white",
   rented: "bg-orange-500 text-white",
 };
