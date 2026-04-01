@@ -164,7 +164,7 @@ const Contact = () => {
                   </div>
                 </a>
 
-                <a href="https://www.facebook.com/share/1Nb3TSLt2u/" target="_blank" rel="noopener noreferrer" className="flex items-start gap-3 group">
+                <a href="https://www.facebook.com/jargal.jargal.554238" target="_blank" rel="noopener noreferrer" className="flex items-start gap-3 group">
                   <div className="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center shrink-0 group-hover:bg-accent/20 transition-colors">
                     <Facebook size={18} className="text-accent" />
                   </div>
