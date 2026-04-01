@@ -164,6 +164,10 @@ const translations: Record<string, Record<Lang, string>> = {
   "admin.searchPlaceholder": { en: "Search by title or location...", mn: "Гарчиг эсвэл байршлаар хайх..." },
   "admin.noResults": { en: "No properties match your search.", mn: "Хайлтад тохирох үл хөдлөх олдсонгүй." },
   "status.notAvailable": { en: "Not Available", mn: "Боломжгүй" },
+  "admin.deleteConfirmTitle": { en: "Delete Property", mn: "Үл хөдлөх устгах" },
+  "admin.deleteConfirmDesc": { en: "Are you sure you want to delete this property? This action cannot be undone.", mn: "Та энэ үл хөдлөхийг устгахдаа итгэлтэй байна уу? Энэ үйлдлийг буцаах боломжгүй." },
+  "admin.deleteConfirm": { en: "Delete", mn: "Устгах" },
+  "admin.backToProperties": { en: "Back to Properties", mn: "Үл хөдлөх рүү буцах" },
 };
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
