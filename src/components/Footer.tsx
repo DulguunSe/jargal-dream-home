@@ -36,10 +36,10 @@ const Footer = () => {
           <div>
             <h4 className="font-display text-lg font-semibold mb-4">{t("footer.followUs")}</h4>
             <div className="flex items-center gap-4">
-              <a href="https://instagram.com/Jargal_Properties" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-primary-foreground/10 flex items-center justify-center hover:bg-accent transition-colors">
+              <a href="https://www.instagram.com/jargal_properties/" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-primary-foreground/10 flex items-center justify-center hover:bg-accent transition-colors">
                 <Instagram size={18} />
               </a>
-              <a href="https://www.facebook.com/share/1Nb3TSLt2u/" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-primary-foreground/10 flex items-center justify-center hover:bg-accent transition-colors">
+              <a href="https://www.facebook.com/jargal.jargal.554238" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-primary-foreground/10 flex items-center justify-center hover:bg-accent transition-colors">
                 <Facebook size={18} />
               </a>
               <a href="https://wa.me/97689991628" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-primary-foreground/10 flex items-center justify-center hover:bg-accent transition-colors">
