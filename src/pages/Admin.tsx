@@ -8,9 +8,17 @@ import { useAuth } from "@/hooks/useAuth";
 import { useProperties, type Property } from "@/hooks/useProperties";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
-import { LogOut, Trash2, Loader2, Plus, Pencil, MessageSquare, Search } from "lucide-react";
+import { LogOut, Trash2, Loader2, Plus, Pencil, MessageSquare, Search, ArrowLeft } from "lucide-react";
 import PropertyForm from "@/components/PropertyForm";
 import { useLanguage } from "@/contexts/LanguageContext";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
 
 const STATUS_OPTIONS = ["all", "available", "sold", "rented"] as const;
 
@@ -33,6 +41,7 @@ const Admin = () => {
   const [messagesLoading, setMessagesLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [deleteId, setDeleteId] = useState<string | null>(null);
   const { toast } = useToast();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -76,14 +85,16 @@ const Admin = () => {
     navigate("/");
   };
 
-  const handleDelete = async (id: string) => {
-    const { error } = await supabase.from("properties").delete().eq("id", id);
+  const confirmDelete = async () => {
+    if (!deleteId) return;
+    const { error } = await supabase.from("properties").delete().eq("id", deleteId);
     if (error) {
       toast({ title: "Error deleting property", description: error.message, variant: "destructive" });
     } else {
       queryClient.invalidateQueries({ queryKey: ["properties"] });
       toast({ title: "Property removed" });
     }
+    setDeleteId(null);
   };
 
   const handleEdit = (property: Property) => {
@@ -173,24 +184,29 @@ const Admin = () => {
           )}
 
           {showMessages ? (
-            messagesLoading ? (
-              <div className="flex justify-center py-16"><Loader2 className="animate-spin text-accent" size={32} /></div>
-            ) : messages.length === 0 ? (
-              <p className="text-center text-muted-foreground py-16">{t("admin.noMessages")}</p>
-            ) : (
-              <div className="bg-card border border-border rounded-lg divide-y divide-border">
-                {messages.map((m) => (
-                  <div key={m.id} className="p-4">
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="font-medium text-foreground">{m.name}</span>
-                      <span className="text-xs text-muted-foreground">{new Date(m.created_at).toLocaleDateString()}</span>
+            <div>
+              <Button variant="ghost" className="mb-4" onClick={() => setShowMessages(false)}>
+                <ArrowLeft size={16} className="mr-2" /> {t("admin.backToProperties")}
+              </Button>
+              {messagesLoading ? (
+                <div className="flex justify-center py-16"><Loader2 className="animate-spin text-accent" size={32} /></div>
+              ) : messages.length === 0 ? (
+                <p className="text-center text-muted-foreground py-16">{t("admin.noMessages")}</p>
+              ) : (
+                <div className="bg-card border border-border rounded-lg divide-y divide-border">
+                  {messages.map((m) => (
+                    <div key={m.id} className="p-4">
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="font-medium text-foreground">{m.name}</span>
+                        <span className="text-xs text-muted-foreground">{new Date(m.created_at).toLocaleDateString()}</span>
+                      </div>
+                      <p className="text-sm text-accent">{m.email}</p>
+                      <p className="text-sm text-muted-foreground mt-2">{m.message}</p>
                     </div>
-                    <p className="text-sm text-accent">{m.email}</p>
-                    <p className="text-sm text-muted-foreground mt-2">{m.message}</p>
-                  </div>
-                ))}
-              </div>
-            )
+                  ))}
+                </div>
+              )}
+            </div>
           ) : (
             <>
               {/* Search & Filter Bar */}
@@ -262,7 +278,7 @@ const Admin = () => {
                                 <Button variant="ghost" size="sm" onClick={() => handleEdit(p)} className="text-foreground hover:text-accent">
                                   <Pencil size={16} />
                                 </Button>
-                                <Button variant="ghost" size="sm" onClick={() => handleDelete(p.id)} className="text-destructive hover:text-destructive">
+                                <Button variant="ghost" size="sm" onClick={() => setDeleteId(p.id)} className="text-destructive hover:text-destructive">
                                   <Trash2 size={16} />
                                 </Button>
                               </div>
@@ -278,6 +294,20 @@ const Admin = () => {
           )}
         </div>
       </section>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={!!deleteId} onOpenChange={(open) => { if (!open) setDeleteId(null); }}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{t("admin.deleteConfirmTitle")}</DialogTitle>
+            <DialogDescription>{t("admin.deleteConfirmDesc")}</DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDeleteId(null)}>{t("form.cancel")}</Button>
+            <Button variant="destructive" onClick={confirmDelete}>{t("admin.deleteConfirm")}</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </Layout>
   );
 };
