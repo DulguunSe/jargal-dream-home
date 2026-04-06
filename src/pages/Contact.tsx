@@ -144,7 +144,7 @@ const Contact = () => {
                   </div>
                 </a>
 
-                <a href="viber://chat?number=97689991628" className="flex items-start gap-3 group">
+                <a href="viber://chat?number=%2B97689991628" className="flex items-start gap-3 group">
                   <div className="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center shrink-0 group-hover:bg-accent/20 transition-colors">
                     <ViberIcon size={18} className="text-accent" />
                   </div>
