@@ -25,11 +25,11 @@ const Index = () => {
     navigate(`/properties?${params.toString()}`);
   };
 
-  const countries = useMemo(() => [...new Set(allProperties.map((p) => (p as any).country).filter(Boolean))], [allProperties]);
+  const countries = useMemo(() => [...new Set(allProperties.map((p) => p.country).filter(Boolean))], [allProperties]);
 
   const filteredFeatured = useMemo(() => {
     return featured.filter((p) => {
-      if (search.country && (p as any).country !== search.country) return false;
+      if (search.country && p.country !== search.country) return false;
       if (search.type && p.type !== search.type) return false;
       return true;
     });

@@ -11,19 +11,19 @@ const Properties = () => {
   const [country, setCountry] = useState(searchParams.get("country") || "");
   const [type, setType] = useState(searchParams.get("type") || "");
   const [location, setLocation] = useState(searchParams.get("location") || "");
-  const { data: properties = [], isLoading } = useProperties();
+  const { data: properties = [], isLoading, isError } = useProperties();
   const { t } = useLanguage();
 
-  const countries = useMemo(() => [...new Set(properties.map((p) => (p as any).country).filter(Boolean))], [properties]);
+  const countries = useMemo(() => [...new Set(properties.map((p) => p.country).filter(Boolean))], [properties]);
 
   const locations = useMemo(() => {
-    const filtered = country ? properties.filter((p) => (p as any).country === country) : properties;
+    const filtered = country ? properties.filter((p) => p.country === country) : properties;
     return [...new Set(filtered.map((p) => p.location).filter(Boolean))];
   }, [properties, country]);
 
   const filtered = useMemo(() => {
     return properties.filter((p) => {
-      if (country && (p as any).country !== country) return false;
+      if (country && p.country !== country) return false;
       if (type && p.type !== type) return false;
       if (location && p.location !== location) return false;
       return true;
@@ -64,6 +64,8 @@ const Properties = () => {
 
           {isLoading ? (
             <div className="flex justify-center py-16"><Loader2 className="animate-spin text-accent" size={32} /></div>
+          ) : isError ? (
+            <p className="text-center text-muted-foreground py-16">Failed to load properties. Please refresh the page.</p>
           ) : filtered.length === 0 ? (
             <p className="text-center text-muted-foreground py-16">{t("properties.noMatch")}</p>
           ) : (

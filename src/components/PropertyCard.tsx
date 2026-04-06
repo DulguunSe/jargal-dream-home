@@ -12,7 +12,7 @@ const statusBadge: Record<string, string> = {
 const PropertyCard = ({ property }: { property: Property }) => {
   const { lang, t } = useLanguage();
   const title = lang === "mn" && property.title_mn ? property.title_mn : property.title;
-  const status = (property as any).status || "available";
+  const status = property.status || "available";
 
   return (
     <Link
