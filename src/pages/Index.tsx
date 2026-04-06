@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Search, ArrowRight, Shield, Users, Award } from "lucide-react";
+import { Search, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Layout from "@/components/Layout";
 import PropertyCard from "@/components/PropertyCard";
@@ -112,31 +112,8 @@ const Index = () => {
         </div>
       </section>
 
-      {/* About snippet */}
-      <section className="section-padding bg-secondary">
-        <div className="container-wide text-center max-w-2xl mx-auto">
-          <p className="text-accent font-semibold text-sm uppercase tracking-wider">{t("about.label")}</p>
-          <h2 className="font-display text-3xl font-bold text-foreground mt-1">{t("about.whyTitle")}</h2>
-          <p className="mt-4 text-muted-foreground leading-relaxed">
-            {t("about.whyDesc")}
-          </p>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 mt-12">
-            {[
-              { icon: Shield, title: t("about.trusted"), desc: t("about.trustedDesc") },
-              { icon: Users, title: t("about.personalized"), desc: t("about.personalizedDesc") },
-              { icon: Award, title: t("about.expert"), desc: t("about.expertDesc") },
-            ].map(({ icon: Icon, title, desc }) => (
-              <div key={title} className="flex flex-col items-center">
-                <div className="w-14 h-14 rounded-full bg-accent/10 flex items-center justify-center mb-3">
-                  <Icon size={24} className="text-accent" />
-                </div>
-                <h3 className="font-display font-semibold text-foreground">{title}</h3>
-                <p className="text-muted-foreground text-sm mt-1">{desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+
+
 
       {/* CTA */}
       <section className="section-padding bg-accent">

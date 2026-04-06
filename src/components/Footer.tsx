@@ -45,7 +45,7 @@ const Footer = () => {
               <a href="https://wa.me/97689991628" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-primary-foreground/10 flex items-center justify-center hover:bg-accent transition-colors">
                 <WhatsAppIcon size={18} />
               </a>
-              <a href="viber://chat?number=97689991628" className="w-10 h-10 rounded-full bg-primary-foreground/10 flex items-center justify-center hover:bg-accent transition-colors">
+              <a href="viber://chat?number=%2B97689991628" className="w-10 h-10 rounded-full bg-primary-foreground/10 flex items-center justify-center hover:bg-accent transition-colors">
                 <ViberIcon size={18} />
               </a>
             </div>

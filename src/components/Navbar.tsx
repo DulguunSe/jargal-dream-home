@@ -30,7 +30,6 @@ const Navbar = () => {
   const navLinks = [
     { to: "/", label: t("nav.home") },
     { to: "/properties", label: t("nav.properties") },
-    { to: "/about", label: t("nav.about") },
     { to: "/contact", label: t("nav.contact") },
   ];
 
