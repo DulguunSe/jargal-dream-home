@@ -3,16 +3,11 @@ import { MapPin, BedDouble, Bath, Maximize } from "lucide-react";
 import type { Property } from "@/hooks/useProperties";
 import { useLanguage } from "@/contexts/LanguageContext";
 
-const statusBadge: Record<string, string> = {
-  available: "bg-accent/80 text-accent-foreground",
-  sold: "bg-red-500 text-white",
-  rented: "bg-orange-500 text-white",
-};
-
 const PropertyCard = ({ property }: { property: Property }) => {
   const { lang, t } = useLanguage();
   const title = lang === "mn" && property.title_mn ? property.title_mn : property.title;
   const status = property.status || "available";
+  const isAvailable = status === "available";
 
   return (
     <Link
@@ -31,13 +26,17 @@ const PropertyCard = ({ property }: { property: Property }) => {
         <span className="absolute top-3 left-3 bg-accent text-accent-foreground text-xs font-semibold px-3 py-1 rounded-full">
           {property.type}
         </span>
-        <span className={`absolute top-3 right-3 text-xs font-semibold px-3 py-1 rounded-full capitalize ${statusBadge[status]}`}>
-          {t(`admin.status.${status}`)}
+        <span className={`absolute top-3 right-3 text-xs font-semibold px-3 py-1 rounded-full ${
+          isAvailable
+            ? "bg-accent/90 text-accent-foreground"
+            : "bg-red-500/90 text-white"
+        }`}>
+          {isAvailable ? t("admin.status.available") : t("status.notAvailable")}
         </span>
       </div>
       <div className="p-5">
-        <p className="text-accent font-bold text-lg">${property.price.toLocaleString()}</p>
-        <h3 className="font-display text-lg font-semibold text-card-foreground mt-1 group-hover:text-accent transition-colors">
+        <p className="text-accent font-bold text-xl">${property.price.toLocaleString()}</p>
+        <h3 className="font-display text-lg font-semibold text-card-foreground mt-1 group-hover:text-accent transition-colors line-clamp-1">
           {title}
         </h3>
         <div className="flex items-center gap-1 text-muted-foreground text-sm mt-2">
