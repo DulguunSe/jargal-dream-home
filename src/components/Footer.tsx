@@ -23,7 +23,7 @@ const Footer = () => {
 
   return (
     <footer className="bg-primary text-primary-foreground">
-      <div className="container-wide section-padding">
+      <div className="container-wide px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
           <div>
             <h3 className="font-display text-xl font-bold mb-4">
@@ -64,8 +64,17 @@ const Footer = () => {
             </div>
           </div>
         </div>
-        <div className="mt-12 pt-8 border-t border-primary-foreground/10 text-center text-sm text-primary-foreground/50">
-          © {new Date().getFullYear()} Jargal Properties. {t("footer.rights")}
+      </div>
+
+      {/* Bottom legal bar - visually separated */}
+      <div className="border-t border-primary-foreground/15 bg-primary">
+        <div className="container-wide px-4 sm:px-6 lg:px-8 py-5 flex flex-col sm:flex-row items-center justify-between gap-2">
+          <p className="text-sm text-primary-foreground/50">
+            © {new Date().getFullYear()} Jargal Properties. {t("footer.rights")}
+          </p>
+          <p className="text-xs text-primary-foreground/30">
+            Powered by RE/MAX Prestige
+          </p>
         </div>
       </div>
     </footer>

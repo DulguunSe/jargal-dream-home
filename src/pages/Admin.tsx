@@ -11,6 +11,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { LogOut, Trash2, Loader2, Plus, Pencil, MessageSquare, Search, ArrowLeft } from "lucide-react";
 import PropertyForm from "@/components/PropertyForm";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useAdminAccess } from "@/hooks/useAdminAccess";
 import {
   Dialog,
   DialogContent,
@@ -46,6 +47,14 @@ const Admin = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { t } = useLanguage();
+  const { unlocked, lock } = useAdminAccess();
+
+  // Block direct access: if not unlocked via keypress and not already authenticated as admin, redirect
+  useEffect(() => {
+    if (!authLoading && !unlocked && !(user && isAdmin)) {
+      navigate("/", { replace: true });
+    }
+  }, [unlocked, user, isAdmin, authLoading, navigate]);
 
   const filteredProperties = useMemo(() => {
     return properties.filter((p) => {
@@ -54,7 +63,7 @@ const Admin = () => {
         p.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         p.location.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesStatus =
-        statusFilter === "all" || (p as any).status === statusFilter;
+        statusFilter === "all" || p.status === statusFilter;
       return matchesSearch && matchesStatus;
     });
   }, [properties, searchQuery, statusFilter]);
@@ -73,8 +82,7 @@ const Admin = () => {
     const { error } = await signIn(email, password);
     setLoginLoading(false);
     if (error) {
-      toast({ title: "Invalid credentials", variant: "destructive" });
-      navigate("/");
+      toast({ title: t("admin.invalidCredentials"), variant: "destructive" });
     } else {
       toast({ title: "Welcome back, Admin!" });
     }
@@ -82,6 +90,7 @@ const Admin = () => {
 
   const handleLogout = async () => {
     await signOut();
+    lock();
     navigate("/");
   };
 
@@ -107,6 +116,11 @@ const Admin = () => {
     setShowForm(false);
     setEditingProperty(null);
   };
+
+  // If not unlocked and not admin, show nothing (redirect handled above)
+  if (!unlocked && !(user && isAdmin)) {
+    return null;
+  }
 
   if (authLoading) {
     return (
@@ -157,12 +171,12 @@ const Admin = () => {
     <Layout>
       <section className="section-padding">
         <div className="container-wide">
-          <div className="flex items-center justify-between mb-8">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
             <div>
               <h1 className="font-display text-3xl font-bold text-foreground">{t("admin.dashboard")}</h1>
               <p className="text-muted-foreground mt-1">{t("admin.manageListings")}</p>
             </div>
-            <div className="flex gap-3">
+            <div className="flex flex-wrap gap-3">
               {!showForm && (
                 <Button className="bg-accent text-accent-foreground hover:bg-accent/90" onClick={() => { setEditingProperty(null); setShowForm(true); setShowMessages(false); }}>
                   <Plus size={16} className="mr-2" /> {t("admin.addProperty")}
@@ -200,7 +214,8 @@ const Admin = () => {
                         <span className="font-medium text-foreground">{m.name}</span>
                         <span className="text-xs text-muted-foreground">{new Date(m.created_at).toLocaleDateString()}</span>
                       </div>
-                      <p className="text-sm text-accent">{m.email}</p>
+                      <p className="text-sm text-accent">{m.email || m.phone || "—"}</p>
+                      {m.phone && <p className="text-sm text-muted-foreground">📞 {m.phone}</p>}
                       <p className="text-sm text-muted-foreground mt-2">{m.message}</p>
                     </div>
                   ))}
@@ -220,7 +235,7 @@ const Admin = () => {
                     className="pl-9"
                   />
                 </div>
-                <div className="flex gap-2">
+                <div className="flex flex-wrap gap-2">
                   {STATUS_OPTIONS.map((s) => (
                     <Button
                       key={s}
@@ -261,7 +276,7 @@ const Admin = () => {
                                 <img src={p.image} alt={p.title} className="w-10 h-10 rounded object-cover hidden sm:block" />
                                 <div>
                                   <span>{p.title}</span>
-                                  {(p as any).country && <span className="ml-2 text-xs bg-accent/10 text-accent px-2 py-0.5 rounded">{(p as any).country}</span>}
+                                  {p.country && <span className="ml-2 text-xs bg-accent/10 text-accent px-2 py-0.5 rounded">{p.country}</span>}
                                 </div>
                               </div>
                             </td>
@@ -269,8 +284,8 @@ const Admin = () => {
                             <td className="p-4 text-muted-foreground hidden md:table-cell">{p.type}</td>
                             <td className="p-4 text-accent font-semibold">${p.price.toLocaleString()}</td>
                             <td className="p-4">
-                              <span className={`text-xs font-semibold px-2.5 py-1 rounded-full capitalize ${statusColors[(p as any).status] || statusColors.available}`}>
-                                {t(`admin.status.${(p as any).status || "available"}`)}
+                              <span className={`text-xs font-semibold px-2.5 py-1 rounded-full capitalize ${statusColors[p.status] || statusColors.available}`}>
+                                {t(`admin.status.${p.status || "available"}`)}
                               </span>
                             </td>
                             <td className="p-4 text-right">

@@ -1,31 +1,22 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Menu, X, Globe } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useAdminAccess } from "@/hooks/useAdminAccess";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   const { lang, setLang, t } = useLanguage();
+  const { unlocked } = useAdminAccess();
 
-  // Hidden admin: press 'A' 3 times quickly
-  useEffect(() => {
-    const times: number[] = [];
-    const handler = (e: KeyboardEvent) => {
-      if (e.key.toLowerCase() === "a") {
-        times.push(Date.now());
-        // Keep only last 3
-        while (times.length > 3) times.shift();
-        if (times.length === 3 && times[2] - times[0] < 1000) {
-          times.length = 0;
-          navigate("/admin");
-        }
-      }
-    };
-    window.addEventListener("keydown", handler);
-    return () => window.removeEventListener("keydown", handler);
-  }, [navigate]);
+  // Auto-navigate to /admin when unlocked via keypress
+  // (only if not already there)
+  if (unlocked && location.pathname !== "/admin") {
+    // Use a timeout to avoid state update during render
+    setTimeout(() => navigate("/admin"), 0);
+  }
 
   const navLinks = [
     { to: "/", label: t("nav.home") },
